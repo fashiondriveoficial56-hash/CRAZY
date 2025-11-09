@@ -1,0 +1,336 @@
+/* === Reset === */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  background: #0f0f1a;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+/* === Contenedor principal === */
+.login-container {
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+  padding: 20px;
+}
+
+/* === Logo === */
+.app-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.logo-bg {
+  width: 80px;
+  height: 80px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #00f0ff, #ff00f7, #00ff85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.logo-bg i {
+  font-size: 35px;
+  color: white;
+}
+
+.brand {
+  font-size: 28px;
+  font-weight: 700;
+  background: linear-gradient(90deg, #00d4ff, #ff00ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* === Títulos === */
+.title {
+  font-size: 26px;
+  margin-bottom: 8px;
+}
+
+.subtitle {
+  font-size: 15px;
+  color: #aaa;
+  margin-bottom: 25px;
+}
+
+/* === Inputs === */
+.login-form {
+  text-align: left;
+}
+
+.login-form label {
+  display: block;
+  font-size: 12px;
+  font-weight: bold;
+  margin: 10px 0 8px;
+}
+
+.input-group {
+  background: #1a1a29;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  margin-bottom: 15px;
+  border: 1px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.input-group i {
+  margin-right: 10px;
+  color: #aaa;
+  font-size: 16px;
+}
+
+.input-group input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: #fff;
+  font-size: 14px;
+}
+
+.input-group:focus-within {
+  border: 1px solid #00f0ff;
+  box-shadow: 0 0 8px #00f0ff55;
+}
+
+/* === Botón Iniciar sesión === */
+.btn-login {
+  width: 100%;
+  padding: 14px;
+  margin-top: 10px;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #fff;
+  cursor: pointer;
+  background: linear-gradient(90deg, #00f0ff, #ff00f7, #00ff85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  transition: transform 0.2s;
+}
+
+.btn-login:hover {
+  transform: scale(1.02);
+}
+
+/* === Enlaces === */
+.register-link {
+  margin-top: 20px;
+  margin-bottom: 12px;
+  font-size: 14px;
+}
+
+.register-link a {
+  color: #00f0ff;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.register-link a:hover {
+  text-decoration: underline;
+}
+
+.forgot-password {
+  font-size: 14px;
+  color: #aaa;
+  margin-bottom: 25px;
+}
+
+/* === Divider === */
+.divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: #aaa;
+  font-size: 13px;
+  margin: 20px 0;
+}
+
+.divider span {
+  flex: 1;
+  height: 1px;
+  background: #333;
+}
+
+.divider p {
+  margin: 0 10px;
+  color: #aaa;
+}
+
+/* === Botones sociales === */
+.social-login {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.btn-social {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #333;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 500;
+  color: #fff;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s;
+}
+
+.btn-social:hover {
+  background: #1f1f2e;
+  transform: scale(1.02);
+}
+
+.telegram {
+  border-color: #1da1f2;
+}
+
+.whatsapp {
+  border-color: #25d366;
+}
+
+/* === Responsive ajustes === */
+@media (min-width: 768px) {
+  .social-login {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .btn-social {
+    flex: 1;
+  }
+}
+
+/* ==== Toast ==== */
+.toast, #toast {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #1e1e2f;
+  color: #fff;
+  padding: 12px 18px;
+  border-radius: 10px;
+  font-size: 14px;
+  min-width: 220px;
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.7);
+  border: 1px solid rgba(0, 255, 255, 0.8);
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  z-index: 9999;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.toast.success {
+  box-shadow: 0 0 15px rgba(0, 255, 127, 0.8);
+  border-color: #00ff7f;
+}
+
+.toast.error {
+  box-shadow: 0 0 15px rgba(255, 50, 50, 0.8);
+  border-color: #ff3232;
+}
+
+.toast.info {
+  box-shadow: 0 0 15px rgba(0, 150, 255, 0.8);
+  border-color: #0096ff;
+}
+
+/* ==== Toast (mejor compatibilidad y animación) ==== */
+.toast {
+  display: inline-block;
+  text-align: center;
+  line-height: 1.4;
+  pointer-events: none;
+}
+
+@keyframes toast-pop {
+  0% { transform: translateY(25px); opacity: 0; }
+  30% { transform: translateY(0); opacity: 1; }
+  80% { opacity: 1; }
+  100% { transform: translateY(25px); opacity: 0; }
+}
+
+.toast.show {
+  animation: toast-pop 3s ease forwards;
+}
+
+
+
+
+/* ==== ANIMACIONES DE ENTRADA RÁPIDAS Y NEÓN ==== */
+
+/* Brillo tipo neón */
+@keyframes neonGlow {
+  0% { text-shadow: 0 0 0px #00ffff; }
+  50% { text-shadow: 0 0 10px #00ffff, 0 0 25px #00bfff; }
+  100% { text-shadow: 0 0 5px #00ffff; }
+}
+
+/* Aparición rápida y suave */
+@keyframes fadeSlide {
+  0% {
+    opacity: 0;
+    transform: translateY(25px) scale(0.96);
+    filter: blur(3px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+/* ==== Aplicaciones ==== */
+
+/* Logo Crazy Mods */
+.brand {
+  opacity: 0;
+  animation:
+    fadeSlide 0.8s ease-out forwards,
+    neonGlow 2s ease-in-out infinite alternate;
+  animation-delay: 0.2s;
+}
+
+/* Título Iniciar Sesión */
+.title {
+  opacity: 0;
+  animation: fadeSlide 0.7s ease-out forwards;
+  animation-delay: 0.5s;
+}
+
+/* Subtítulo */
+.subtitle {
+  opacity: 0;
+  animation: fadeSlide 0.7s ease-out forwards;
+  animation-delay: 0.7s;
+}
