@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin - Usuarios | CrazyMods</title>
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+  <script src="js/firebase-config.js"></script>
+
+  <style>
+    :root{
+      --bg:#070717;
+      --card:#0f1120;
+      --neon:#00ffff;
+      --muted:#9aa4b2;
+    }
+    body{
+      margin:0;
+      font-family:"Poppins",system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;
+      background:linear-gradient(180deg,#050515 0%,#0b0b1a 100%);
+      color:#e6f7f8;
+      padding:28px;
+    }
+    h1{
+      font-size:20px;
+      margin:0 0 14px 0;
+      color:white;
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+    .topbar{display:flex;gap:12px;align-items:center;margin-bottom:18px;flex-wrap:wrap;}
+    .card{
+      background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));
+      border:1px solid rgba(0,255,255,0.08);
+      box-shadow:0 6px 30px rgba(0,255,255,0.03);
+      padding:16px;
+      border-radius:12px;
+    }
+    .controls{display:flex;gap:8px;align-items:center;margin-left:auto;}
+    input[type="search"],.select,.btn{
+      background:transparent;
+      border:1px solid rgba(0,255,255,0.12);
+      color:var(--neon);
+      padding:8px 10px;
+      border-radius:8px;
+      outline:none;
+      min-width:160px;
+    }
+    .btn{cursor:pointer;background:linear-gradient(90deg,rgba(0,255,255,0.08),rgba(0,180,255,0.03));color:var(--neon);}
+    .btn.primary{background:linear-gradient(90deg,var(--neon),#66f0ff);color:#001;border:none;}
+    .btn.danger{background:linear-gradient(90deg,#ff6b6b,#ff3b3b);color:white;border:none;}
+    .table-wrap{margin-top:16px;overflow-x:auto;}
+    table{width:100%;border-collapse:collapse;min-width:900px;}
+    thead th{text-align:left;font-size:13px;padding:12px 10px;color:var(--muted);border-bottom:1px solid rgba(255,255,255,0.03);cursor:pointer;}
+    tbody td{padding:12px 10px;border-bottom:1px dashed rgba(255,255,255,0.03);color:#d6f9fb;font-size:14px;}
+    .small{font-size:12px;color:var(--muted);}
+    .actions button{margin-right:6px;border-radius:8px;padding:6px 8px;border:1px solid rgba(255,255,255,0.02);background:transparent;color:var(--neon);cursor:pointer;}
+    .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(2,6,12,0.6);z-index:9998;}
+    .modal.show{display:flex;}
+    .modal-card{width:92%;max-width:520px;background:var(--card);border-radius:12px;padding:18px;border:1px solid rgba(0,255,255,0.06);box-shadow:0 12px 50px rgba(0,255,255,0.04);}
+    .modal-card h3{margin:0 0 8px 0;color:var(--neon);}
+    .modal-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed rgba(255,255,255,0.02);}
+    .right-muted{color:var(--muted);font-size:13px;}
+    .toast{position:fixed;bottom:20px;right:20px;background:#0e1722;color:#fff;padding:10px 14px;border-radius:10px;font-size:14px;min-width:200px;
+      box-shadow:0 0 15px rgba(0,255,255,0.12);border:1px solid rgba(0,255,255,0.06);opacity:0;transform:translateY(10px);
+      transition:opacity 0.25s,transform 0.25s;z-index:99999;display:flex;gap:8px;align-items:center;}
+    .toast.show{opacity:1;transform:none;}
+    @media(max-width:720px){thead th{font-size:12px;}tbody td{font-size:13px;}.controls{flex-direction:column;align-items:flex-end;gap:6px;}}
+  </style>
+</head>
+<body>
+  <h1><i class="fa-solid fa-users"></i> Panel Admin — Usuarios</h1>
+
+  <div class="topbar card">
+    <div><strong>Total:</strong> <span id="totalUsers">0</span></div>
+    <div class="controls">
+      <input id="searchInput" type="search" placeholder="Buscar por usuario o correo..." />
+      <select id="sortSelect" class="select">
+        <option value="username_asc">Usuario ↑</option>
+        <option value="username_desc">Usuario ↓</option>
+        <option value="email_asc">Email ↑</option>
+        <option value="email_desc">Email ↓</option>
+      </select>
+      <button id="exportBtn" class="btn">Exportar CSV</button>
+      <button id="refreshBtn" class="btn">Refrescar</button>
+    </div>
+  </div>
+
+  <div class="table-wrap card">
+    <table>
+      <thead>
+        <tr>
+          <th>Usuario</th>
+          <th>Email</th>
+          <th>WhatsApp</th>
+          <th>Saldo</th>
+          <th>Bono</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="usersTbody"></tbody>
+    </table>
+  </div>
+
+  <!-- Modal detalle -->
+  <div id="detailModal" class="modal">
+    <div class="modal-card">
+      <h3 id="detailName">Usuario</h3>
+      <div class="modal-row"><div class="small">Email</div><div id="detailEmail" class="right-muted"></div></div>
+      <div class="modal-row"><div class="small">WhatsApp</div><div id="detailWhats" class="right-muted"></div></div>
+      <div class="modal-row"><div class="small">Saldo</div><div id="detailSaldo" class="right-muted"></div></div>
+      <div class="modal-row"><div class="small">Bono</div><div id="detailBono" class="right-muted"></div></div>
+      <div class="modal-row"><div class="small">Password</div><div id="detailPass" class="right-muted"></div></div>
+      <div style="text-align:right; margin-top:12px;">
+        <button id="closeDetail" class="btn">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal recarga -->
+  <div id="rechargeModal" class="modal">
+    <div class="modal-card">
+      <h3 id="rechargeUser">Recargar usuario</h3>
+      <label>Tipo:</label>
+      <select id="rechargeType" class="select" style="width:100%;margin:6px 0;">
+        <option value="saldo">Saldo</option>
+        <option value="bono">Bono</option>
+      </select>
+      <label>Monto:</label>
+      <input id="rechargeAmount" type="number" min="0" class="select" style="width:100%;margin:6px 0;" placeholder="Ingrese cantidad..." />
+      <div style="text-align:right;margin-top:10px;">
+        <button id="cancelRecharge" class="btn">Cancelar</button>
+        <button id="confirmRecharge" class="btn primary">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showToast(msg,type="info"){
+      const colors={info:'var(--neon)',success:'#00ff7f',error:'#ff6b6b'};
+      const old=document.querySelector('.toast');if(old)old.remove();
+      const t=document.createElement('div');t.className='toast';
+      const icon=document.createElement('i');icon.className='fa-solid fa-circle-info';icon.style.color=colors[type];
+      const span=document.createElement('span');span.textContent=msg;
+      t.append(icon,span);document.body.appendChild(t);
+      setTimeout(()=>t.classList.add('show'),50);
+      setTimeout(()=>{t.classList.remove('show');setTimeout(()=>t.remove(),300);},3500);
+    }
+
+    const usersTbody=document.getElementById('usersTbody');
+    const totalUsersEl=document.getElementById('totalUsers');
+    const searchInput=document.getElementById('searchInput');
+    const sortSelect=document.getElementById('sortSelect');
+    const exportBtn=document.getElementById('exportBtn');
+    const refreshBtn=document.getElementById('refreshBtn');
+    const detailModal=document.getElementById('detailModal');
+    const detailName=document.getElementById('detailName');
+    const detailEmail=document.getElementById('detailEmail');
+    const detailWhats=document.getElementById('detailWhats');
+    const detailSaldo=document.getElementById('detailSaldo');
+    const detailBono=document.getElementById('detailBono');
+    const detailPass=document.getElementById('detailPass');
+    const closeDetail=document.getElementById('closeDetail');
+    const rechargeModal=document.getElementById('rechargeModal');
+    const rechargeUser=document.getElementById('rechargeUser');
+    const rechargeType=document.getElementById('rechargeType');
+    const rechargeAmount=document.getElementById('rechargeAmount');
+    const cancelRecharge=document.getElementById('cancelRecharge');
+    const confirmRecharge=document.getElementById('confirmRecharge');
+    let currentRechargeUser=null;
+    let allUsers={};
+
+    if(typeof database==='undefined'){
+      showToast('⚠️ Firebase no inicializado.','error');
+    }else{
+      database.ref('users').on('value',snap=>{
+        allUsers=snap.val()||{};
+        renderUsers();
+      });
+    }
+
+    function renderUsers(){
+      const arr=Object.keys(allUsers).map(u=>({username:u,...allUsers[u]}));
+      const q=(searchInput.value||'').toLowerCase();
+      let filtered=arr.filter(i=>!q||i.username.toLowerCase().includes(q)||i.email?.toLowerCase().includes(q));
+      usersTbody.innerHTML='';
+      filtered.forEach(i=>{
+        const tr=document.createElement('tr');
+        tr.innerHTML=`
+          <td><strong>${i.nombre||i.username}</strong><div class="small">${i.username}</div></td>
+          <td>${i.email||''}</td><td>${i.whatsapp||''}</td>
+          <td>${i.saldo||0}</td><td>${i.bono||0}</td>
+          <td class="actions">
+            <button class="view-btn" data-user="${i.username}"><i class="fa-solid fa-eye"></i></button>
+            <button class="recharge-btn" data-user="${i.username}"><i class="fa-solid fa-coins"></i></button>
+            <button class="delete-btn" data-user="${i.username}"><i class="fa-solid fa-trash"></i></button>
+          </td>`;
+        usersTbody.appendChild(tr);
+      });
+      totalUsersEl.textContent=filtered.length;
+      document.querySelectorAll('.view-btn').forEach(b=>b.onclick=()=>openDetail(b.dataset.user));
+      document.querySelectorAll('.delete-btn').forEach(b=>b.onclick=()=>confirmDelete(b.dataset.user));
+      document.querySelectorAll('.recharge-btn').forEach(b=>b.onclick=()=>openRecharge(b.dataset.user));
+    }
+
+    function openDetail(u){
+      const user=allUsers[u];
+      detailName.textContent=user.nombre||u;
+      detailEmail.textContent=user.email||'-';
+      detailWhats.textContent=user.whatsapp||'-';
+      detailSaldo.textContent=user.saldo||'0';
+      detailBono.textContent=user.bono||'0';
+      detailPass.textContent=user.password||'No registrado';
+      detailModal.classList.add('show');
+    }
+    closeDetail.onclick=()=>detailModal.classList.remove('show');
+    detailModal.onclick=e=>{if(e.target===detailModal)detailModal.classList.remove('show');};
+
+    function confirmDelete(u){
+      const confirmModal=document.createElement('div');
+      confirmModal.className='modal show';
+      confirmModal.innerHTML=`
+        <div class="modal-card" style="max-width:380px;text-align:center;">
+          <h3>¿Eliminar usuario?</h3>
+          <p.style="margin:8px 0;">Se eliminará <strong>${u}</strong> permanentemente.</p>
+          <div style="margin-top:12px;">
+            <button class="btn" id="cancelDel">Cancelar</button>
+            <button class="btn danger" id="confirmDel">Eliminar</button>
+          </div>
+        </div>`;
+      document.body.appendChild(confirmModal);
+      confirmModal.querySelector('#cancelDel').onclick=()=>confirmModal.remove();
+      confirmModal.querySelector('#confirmDel').onclick=()=>{
+        database.ref('users/'+u).remove().then(()=>{
+          showToast('Usuario eliminado','success');
+          confirmModal.remove();
+        }).catch(()=>showToast('Error al eliminar','error'));
+      };
+    }
+
+    function openRecharge(u){
+      currentRechargeUser=u;
+      rechargeUser.textContent="Recargar a " + u;
+      rechargeAmount.value='';
+      rechargeModal.classList.add('show');
+    }
+    cancelRecharge.onclick=()=>rechargeModal.classList.remove('show');
+    rechargeModal.onclick=e=>{if(e.target===rechargeModal)rechargeModal.classList.remove('show');};
+
+    // === Aquí está la lógica que actualiza saldo/bono Y además envía la notificación ===
+    confirmRecharge.onclick=()=>{
+      const type=rechargeType.value;
+      const amount=parseFloat(rechargeAmount.value);
+      if(isNaN(amount)||amount<=0) return showToast('Ingrese un monto válido','error');
+      const user=allUsers[currentRechargeUser] || {};
+      const oldVal = parseFloat(user[type] || 0);
+      const newValue = (oldVal + amount);
+
+      database.ref(`users/${currentRechargeUser}/${type}`).set(newValue).then(()=>{
+
+        // 🔥 Guarda historial de recarga
+        const fecha = new Date().toLocaleString();
+        const hist = { tipo: type.charAt(0).toUpperCase()+type.slice(1), cantidad: amount, fecha: fecha, timestamp: Date.now() };
+        database.ref(`users/${currentRechargeUser}/recargas`).push(hist).catch(()=>{ /* no interrumpir si falla historial */ });
+
+        // 📨 Enviar notificación automática al usuario
+        const notifTitle = (type === 'saldo') ? 'Saldo' : 'Bono';
+        // mensaje en singular/plural y texto claro
+        const notifMessage = `Se agregaron ${amount} dólares de ${type} a tu cuenta.`;
+        const notifIcon = (type === 'saldo') ? 'fa-coins' : 'fa-gift';
+        const notif = {
+  title: notifTitle,
+  message: notifMessage,
+  icon: notifIcon,
+  time: fecha,
+  timestamp: Date.now(),
+  read: false // 👈 importante: marca el estado inicial
+};
+
+        // push a notifications/{usuario}
+        database.ref(`notifications/${currentRechargeUser}`).push(notif).catch(()=>{ /* si falla notificaciones, no romper la UX */ });
+
+        showToast('Recarga exitosa y notificación enviada','success');
+        rechargeModal.classList.remove('show');
+      }).catch((err)=>{
+        console.error('Error recargando:', err);
+        showToast('Error al recargar','error');
+      });
+    };
+
+    exportBtn.onclick=()=>{
+      const rows=[['username','nombre','email','whatsapp','saldo','bono','password']];
+      Object.keys(allUsers).forEach(u=>{
+        const a=allUsers[u];
+        rows.push([u,a.nombre||'',a.email||'',a.whatsapp||'',a.saldo||0,a.bono||0,a.password||'']);
+      });
+      const csv=rows.map(r=>r.join(',')).join('\n');
+      const blob=new Blob([csv],{type:'text/csv'});
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement('a');a.href=url;a.download='usuarios.csv';
+      a.click();URL.revokeObjectURL(url);
+    };
+
+    refreshBtn.onclick=()=>database.ref('users').once('value').then(s=>{allUsers=s.val()||{};renderUsers();showToast('Refrescado','info');});
+    searchInput.oninput=()=>renderUsers();
+    sortSelect.onchange=()=>renderUsers();
+  </script>
+</body>
+</html>

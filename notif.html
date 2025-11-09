@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Notificaciones</title>
+  <link rel="stylesheet" href="notif.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+<body>
+  <div class="notif-drawer open">
+    <div class="notif-header">
+      <h3><i class="fa-solid fa-bell"></i> Notificaciones</h3>
+    </div>
+
+    <ul class="notif-list" id="notifList">
+      <li class="empty">Cargando notificaciones...</li>
+    </ul>
+  </div>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="./js/firebase-config.js"></script>
+
+  <script src="./js/notif.js"></script>
+</body>
+</html>

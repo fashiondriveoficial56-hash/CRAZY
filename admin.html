@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panel Admin - Notificaciones</title>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+  />
+
+  <style>
+    body {
+      background: #0b0b15;
+      color: white;
+      font-family: "Poppins", sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 40px;
+    }
+
+    .admin-panel {
+      background: rgba(20, 20, 40, 0.9);
+      border: 1px solid rgba(0, 255, 255, 0.3);
+      border-radius: 16px;
+      padding: 25px 30px;
+      width: 400px;
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+    }
+
+    h2 {
+      text-align: center;
+      color: #0ff;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: 600;
+      color: #ccc;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      margin-top: 5px;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(0, 255, 255, 0.3);
+      background: rgba(15, 15, 25, 0.9);
+      color: white;
+      font-size: 14px;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 20px;
+      background: linear-gradient(90deg, #00ffff, #ff00c8);
+      border: none;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    button:hover {
+      opacity: 0.85;
+    }
+
+    .status {
+      margin-top: 15px;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    .status.success {
+      color: #0f0;
+    }
+
+    .status.error {
+      color: #f44;
+    }
+
+    .icon-picker {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .icon-picker i {
+      cursor: pointer;
+      font-size: 20px;
+      padding: 6px;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      transition: 0.2s;
+    }
+
+    .icon-picker i:hover,
+    .icon-picker i.selected {
+      color: #0ff;
+      border-color: #0ff;
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-panel">
+    <h2><i class="fa-solid fa-bell"></i> Enviar Notificación</h2>
+
+    <label>Tipo de destino:</label>
+    <select id="tipoDestino">
+      <option value="global">Todos los usuarios</option>
+      <option value="usuario">Usuario específico</option>
+    </select>
+
+    <label id="labelUsuario" style="display:none;">Nombre de usuario:</label>
+    <input id="nombreUsuario" type="text" placeholder="ej: CrazyUser23" style="display:none;" />
+
+    <label>Título:</label>
+    <input id="titulo" type="text" placeholder="Título de la notificación" />
+
+    <label>Mensaje:</label>
+    <textarea id="mensaje" rows="3" placeholder="Escribe el contenido..."></textarea>
+
+    <label>Ícono:</label>
+    <div class="icon-picker" id="iconPicker">
+      <i class="fa-solid fa-bullhorn"></i>
+      <i class="fa-solid fa-gift"></i>
+      <i class="fa-solid fa-trophy"></i>
+      <i class="fa-solid fa-bell"></i>
+      <i class="fa-solid fa-star"></i>
+      <i class="fa-solid fa-bolt"></i>
+      <i class="fa-solid fa-fire"></i>
+      <i class="fa-solid fa-heart"></i>
+    </div>
+
+    <button id="enviarNotif"><i class="fa-solid fa-paper-plane"></i> Enviar</button>
+
+    <div id="estado" class="status"></div>
+  </div>
+
+  <!-- ✅ Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+  <script src="./js/firebase-config.js"></script>
+
+  <script>
+    const tipo = document.getElementById("tipoDestino");
+    const nombreUsuario = document.getElementById("nombreUsuario");
+    const labelUsuario = document.getElementById("labelUsuario");
+    const iconPicker = document.getElementById("iconPicker");
+    const estado = document.getElementById("estado");
+    let iconSeleccionado = "fa-bell";
+
+    tipo.addEventListener("change", () => {
+      const isUser = tipo.value === "usuario";
+      nombreUsuario.style.display = isUser ? "block" : "none";
+      labelUsuario.style.display = isUser ? "block" : "none";
+    });
+
+    // 🎨 Selector de íconos
+    iconPicker.addEventListener("click", (e) => {
+      if (e.target.tagName === "I") {
+        iconPicker.querySelectorAll("i").forEach(i => i.classList.remove("selected"));
+        e.target.classList.add("selected");
+        iconSeleccionado = e.target.classList[1]; // Ej: fa-bullhorn
+      }
+    });
+
+    // 📨 Enviar notificación
+document.getElementById("enviarNotif").addEventListener("click", () => {
+  const titulo = document.getElementById("titulo").value.trim();
+  const mensaje = document.getElementById("mensaje").value.trim();
+  const destino = tipo.value;
+  const usuario = nombreUsuario.value.trim();
+
+  if (!titulo || !mensaje) {
+    estado.textContent = "Completa el título y mensaje.";
+    estado.className = "status error";
+    return;
+  }
+
+  const notif = {
+    title: titulo,
+    message: mensaje,
+    icon: iconSeleccionado,
+    time: new Date().toLocaleString(),
+    timestamp: Date.now() // 🔥 ESTA LÍNEA ES LA CLAVE
+  };
+
+  const dbRef = firebase.database().ref("notifications");
+  let ref;
+
+  if (destino === "global") {
+    ref = dbRef.child("global").push();
+  } else if (usuario) {
+    ref = dbRef.child(usuario).push();
+  } else {
+    estado.textContent = "Escribe el nombre del usuario.";
+    estado.className = "status error";
+    return;
+  }
+
+  ref.set(notif)
+    .then(() => {
+      estado.textContent = "✅ Notificación enviada con éxito.";
+      estado.className = "status success";
+      document.getElementById("titulo").value = "";
+      document.getElementById("mensaje").value = "";
+    })
+    .catch(() => {
+      estado.textContent = "❌ Error al enviar.";
+      estado.className = "status error";
+    });
+});
+  </script>
+</body>
+</html>

@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Historial de Datas</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+  <style>
+    /* 💎 Todo tu mismo estilo original */
+    body {
+      margin: 0;
+      padding: 20px;
+      background: radial-gradient(circle at top left, #030712, #081122 70%);
+      font-family: "Poppins", sans-serif;
+      color: #fff;
+      overflow-x: hidden;
+    }
+    h2 {
+      text-align: center;
+      font-size: 1.8rem;
+      background: linear-gradient(90deg, #00eaff, #00bfff, #00eaff);
+      -webkit-background-clip: text;
+      color: transparent;
+      animation: shine 3s linear infinite;
+      margin-bottom: 30px;
+      position: relative;
+      text-shadow: 0 0 20px rgba(0,255,255,0.3);
+    }
+    @keyframes shine {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 100% 50%; }
+    }
+    .card-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 25px;
+      padding-bottom: 50px;
+    }
+    .card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(0, 255, 255, 0.15);
+      border-radius: 20px;
+      padding: 25px;
+      backdrop-filter: blur(15px);
+      box-shadow: 0 0 25px rgba(0, 255, 255, 0.08);
+      transition: all 0.4s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .card::before {
+      content: "";
+      position: absolute;
+      top: -100%;
+      left: -100%;
+      width: 200%;
+      height: 200%;
+      background: conic-gradient(from 180deg, transparent, rgba(0,255,255,0.15), transparent);
+      animation: rotateGlow 6s linear infinite;
+      z-index: 0;
+    }
+    @keyframes rotateGlow {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .card:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 0 35px rgba(0,255,255,0.25);
+    }
+    .card-content { position: relative; z-index: 2; }
+    .card-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+      justify-content: space-between;
+    }
+    .title-wrap {
+      display: flex;
+      align-items: center;
+    }
+    .icon {
+      background: linear-gradient(135deg, #00ffff, #0099ff);
+      color: #000;
+      border-radius: 12px;
+      padding: 10px;
+      margin-right: 12px;
+      font-size: 22px;
+      box-shadow: 0 0 10px rgba(0,255,255,0.5);
+    }
+    .card-title {
+      font-size: 1.1em;
+      font-weight: 600;
+      color: #00eaff;
+      letter-spacing: 0.5px;
+    }
+    .actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: absolute;
+      bottom: 50px; /* 🔥 Subimos para dejar espacio al botón abajo */
+      right: 20px;
+    }
+    .action-btn {
+      background: rgba(0,255,255,0.1);
+      border: 1px solid rgba(0,255,255,0.3);
+      color: #00ffff;
+      border-radius: 10px;
+      width: 35px;
+      height: 35px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .action-btn:hover {
+      background: rgba(0,255,255,0.2);
+      box-shadow: 0 0 10px rgba(0,255,255,0.4);
+      transform: scale(1.1);
+    }
+
+    /* 🟢 Nuevo botón de activar/parchar */
+    .toggle-btn {
+      position: absolute;
+      bottom: 0px;
+      right: 0px; /* 🔥 Lo movemos justo debajo de los iconos */
+      padding: 6px 14px;
+      font-size: 0.8em;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.3s;
+    }
+    .toggle-btn.active {
+      background: rgba(0,255,0,0.2);
+      color: #00ff88;
+      border: 1px solid rgba(0,255,0,0.3);
+    }
+    .toggle-btn.patched {
+      background: rgba(255,0,0,0.2);
+      color: #ff6666;
+      border: 1px solid rgba(255,0,0,0.3);
+    }
+
+    .date {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      font-size: 0.8em;
+      color: rgba(255,255,255,0.6);
+      background: rgba(0,255,255,0.1);
+      padding: 4px 8px;
+      border-radius: 8px;
+      border: 1px solid rgba(0,255,255,0.2);
+    }
+    .card-content p { margin: 8px 0; font-size: 0.95em; color: #d7ffff; }
+    .card-content p strong { color: #00ffff; }
+
+    .status {
+      padding: 5px 12px;
+      border-radius: 10px;
+      font-size: 0.85em;
+      display: inline-block;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+    .status[data-status="TRUE"] { background: rgba(0,255,0,0.25); color: #00ff88; box-shadow: 0 0 10px rgba(0,255,255,0.2);}
+    .status[data-status="MANTENIMIENTO"] { background: rgba(255,255,0,0.25); color: #ffeb3b; box-shadow: 0 0 10px rgba(255,255,0,0.2);}
+    .status[data-status="INDISPONIBLE"] { background: rgba(255,0,0,0.25); color: #ff6b6b; box-shadow: 0 0 10px rgba(255,255,0,0.2);}
+    .no-data { text-align: center; color: rgba(200,255,255,0.7); font-style: italic; font-size: 1.1rem; margin-top: 40px; text-shadow: 0 0 10px rgba(0,255,255,0.2);}
+    .toast { visibility: hidden; min-width: 260px; background: rgba(0,255,255,0.1); border: 1px solid rgba(0,255,255,0.3); color: #bffcff; text-align: center; border-radius: 12px; padding: 14px; position: fixed; left: 50%; bottom: 40px; transform: translateX(-50%); font-size: 0.95rem; backdrop-filter: blur(10px); box-shadow: 0 0 12px rgba(0,255,255,0.2); z-index: 10; opacity: 0; transition: opacity 0.4s ease, bottom 0.4s ease;}
+    .toast.show { visibility: visible; opacity: 1; bottom: 60px; }
+
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); display: none; justify-content: center; align-items: center; z-index: 99; }
+    .modal { background: rgba(0,255,255,0.05); border: 1px solid rgba(0,255,255,0.3); backdrop-filter: blur(15px); padding: 25px; border-radius: 15px; text-align: center; color: #bffcff; box-shadow: 0 0 20px rgba(0,255,255,0.2); animation: fadeIn 0.4s ease; width: 300px;}
+    @keyframes fadeIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    .modal select, .modal button { margin-top: 15px; width: 100%; padding: 10px; border-radius: 10px; border: none; font-size: 1em; }
+    .modal select { background: rgba(0,255,255,0.1); color: #00ffff; border: 1px solid rgba(0,255,255,0.3); }
+    .modal button { background: linear-gradient(90deg, #00bfff, #00ffff); color: #000; font-weight: 600; cursor: pointer; transition: 0.3s; }
+    .modal button:hover { transform: scale(1.05); box-shadow: 0 0 10px rgba(0,255,255,0.4); }
+  </style>
+</head>
+<body>
+  <h2><i class="fa-solid fa-clock-rotate-left"></i> Historial de Datas Enviadas</h2>
+  <div id="cardContainer" class="card-container"></div>
+  <p class="no-data" id="noData">No hay datos registrados aún.</p>
+  <div id="toast" class="toast"></div>
+
+  <!-- Modales -->
+  <div id="editModal" class="modal-overlay">
+    <div class="modal">
+      <h3>Editar Servidor</h3>
+      <select id="serverSelect">
+        <option value="TRUE">TRUE</option>
+        <option value="MANTENIMIENTO">MANTENIMIENTO</option>
+        <option value="INDISPONIBLE">INDISPONIBLE</option>
+      </select>
+      <button id="saveEdit">Guardar</button>
+      <button onclick="closeModal('editModal')">Cancelar</button>
+    </div>
+  </div>
+
+  <div id="deleteModal" class="modal-overlay">
+    <div class="modal">
+      <h3>¿Eliminar esta data?</h3>
+      <p>Esta acción no se puede deshacer.</p>
+      <button id="confirmDelete">Eliminar</button>
+      <button onclick="closeModal('deleteModal')">Cancelar</button>
+    </div>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyA9hQgLtByVB-yoABZslzUwD-YplZYquLM",
+      authDomain: "ffh4x-v41.firebaseapp.com",
+      databaseURL: "https://ffh4x-v41-default-rtdb.firebaseio.com/",
+      projectId: "ffh4x-v41",
+      storageBucket: "ffh4x-v41.appspot.com",
+      messagingSenderId: "93601316403",
+      appId: "1:93601316403:android:e536e42e949c638304ad46"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database().ref("ddd");
+
+    const cardContainer = document.getElementById("cardContainer");
+    const noData = document.getElementById("noData");
+    const toast = document.getElementById("toast");
+    let currentKey = null;
+
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 2500);
+    }
+
+    function openModal(id) { document.getElementById(id).style.display = "flex"; }
+    function closeModal(id) { document.getElementById(id).style.display = "none"; }
+
+    db.on("value", (snapshot) => {
+      const data = snapshot.val();
+      cardContainer.innerHTML = "";
+      if (!data) { noData.style.display = "block"; return; }
+      noData.style.display = "none";
+
+      Object.entries(data).reverse().forEach(([key, item]) => {
+        const fechaVal = item.fecha;
+        const fecha = fechaVal === "PARCHADO" ? "PARCHADO" : new Date(fechaVal).toLocaleString();
+        const status = item.server || "—";
+
+        const div = document.createElement("div");
+        div.className = "card";
+        div.innerHTML = `
+          <span class="date">${fecha}</span>
+          <div class="card-content">
+            <div class="card-header">
+              <div class="title-wrap">
+                <div class="icon"><i class="fa-solid fa-database"></i></div>
+                <div class="card-title">${item.feedback || "Sin nombre"}</div>
+              </div>
+            </div>
+            <p><strong>Versión:</strong> ${item.version || "—"}</p>
+            <p><strong>Tipo de Archivo:</strong> ${item.file || "—"}</p>
+            <p><strong>Servidor:</strong> <span class="status" data-status="${status}">${status}</span></p>
+            <p><strong>Descripción:</strong> ${item.desc || "—"}</p>
+            <div class="actions">
+              <div class="action-btn edit"><i class="fa-solid fa-pen"></i></div>
+              <div class="action-btn delete"><i class="fa-solid fa-trash"></i></div>
+            </div>
+            <button class="toggle-btn ${fechaVal === "PARCHADO" ? "patched" : "active"}">
+              ${fechaVal === "PARCHADO" ? "Parchado" : "Activo"}
+            </button>
+          </div>
+        `;
+
+        // 🟢 Cambiar estado (activar/parchar)
+        div.querySelector(".toggle-btn").addEventListener("click", () => {
+          const newFecha = fechaVal === "PARCHADO" ? Date.now() : "PARCHADO";
+          db.child(key).update({ fecha: newFecha }).then(() => {
+            showToast(`Estado cambiado a ${newFecha === "PARCHADO" ? "PARCHADO" : "ACTIVO"}`);
+          });
+        });
+
+        // ✏️ Editar servidor
+        div.querySelector(".edit").addEventListener("click", () => { currentKey = key; openModal("editModal"); });
+        // 🗑️ Eliminar
+        div.querySelector(".delete").addEventListener("click", () => { currentKey = key; openModal("deleteModal"); });
+
+        cardContainer.appendChild(div);
+      });
+    });
+
+    document.getElementById("saveEdit").addEventListener("click", () => {
+      const newStatus = document.getElementById("serverSelect").value;
+      if (currentKey) {
+        db.child(currentKey).update({ server: newStatus })
+          .then(() => { showToast("✅ Servidor actualizado"); closeModal("editModal"); });
+      }
+    });
+
+    document.getElementById("confirmDelete").addEventListener("click", () => {
+      if (currentKey) {
+        db.child(currentKey).remove()
+          .then(() => { showToast("🗑️ Eliminado correctamente"); closeModal("deleteModal"); });
+      }
+    });
+  </script>
+</body>
+</html>

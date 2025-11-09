@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Feedback</title>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+  />
+  <style>
+    /* --- FONDO --- */
+    body {
+      margin: 0;
+      font-family: "Poppins", sans-serif;
+      background: radial-gradient(circle at top left, #0a192f, #112240, #1e3a8a);
+      color: #e0e0e0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      overflow-y: auto;
+      animation: gradientShift 12s infinite alternate ease-in-out;
+    }
+    @keyframes gradientShift {
+      0% { background: radial-gradient(circle at top left, #0a192f, #112240, #1e3a8a); }
+      100% { background: radial-gradient(circle at bottom right, #0b1522, #172554, #3b82f6); }
+    }
+
+    .container {
+      width: 100%;
+      max-width: 800px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* --- TARJETAS --- */
+    .feedback-card {
+      background: rgba(17, 24, 39, 0.7);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: 0 0 25px rgba(59, 130, 246, 0.15);
+      backdrop-filter: blur(10px);
+      transition: transform 0.3s ease, box-shadow 0.4s ease;
+      animation: fadeIn 0.5s ease-in-out;
+      position: relative;
+      overflow: hidden;
+    }
+    .feedback-card::before {
+      content: "";
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: linear-gradient(45deg, transparent, rgba(59,130,246,0.4), transparent);
+      border-radius: 18px;
+      z-index: 0;
+      animation: glow 4s linear infinite;
+    }
+    @keyframes glow {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .feedback-name {
+      font-weight: 600;
+      color: #3b82f6;
+      font-size: 17px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 1;
+      position: relative;
+    }
+    .icons {
+      display: flex;
+      gap: 12px;
+    }
+    .icon-btn {
+      background: rgba(59, 130, 246, 0.15);
+      border: 1px solid rgba(59,130,246,0.3);
+      color: #bfdbfe;
+      border-radius: 10px;
+      padding: 6px 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .icon-btn:hover {
+      background: rgba(59,130,246,0.3);
+      color: white;
+      transform: scale(1.1);
+      box-shadow: 0 0 10px rgba(59,130,246,0.4);
+    }
+    .feedback-msg {
+      margin-top: 10px;
+      color: #f1f1f1;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+    .feedback-resp {
+      margin-top: 12px;
+      font-size: 14px;
+      color: #bfdbfe;
+      background: rgba(59, 130, 246, 0.1);
+      padding: 10px 12px;
+      border-left: 3px solid #3b82f6;
+      border-radius: 8px;
+    }
+    .feedback-date {
+      margin-top: 10px;
+      font-size: 13px;
+      color: #9ca3af;
+      text-align: right;
+      font-style: italic;
+    }
+    .loading {
+      color: #93c5fd;
+      margin-top: 60px;
+      font-size: 17px;
+      text-align: center;
+      animation: pulse 1.2s infinite;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes pulse {
+      0% { opacity: 0.5; }
+      50% { opacity: 1; }
+      100% { opacity: 0.5; }
+    }
+
+    /* --- MODAL --- */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(8px);
+      z-index: 999;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+    .modal {
+      background: rgba(17, 24, 39, 0.9);
+      border: 1px solid rgba(59,130,246,0.4);
+      border-radius: 15px;
+      padding: 25px;
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+      box-shadow: 0 0 25px rgba(59,130,246,0.3);
+      animation: scaleUp 0.3s ease-in-out;
+    }
+    @keyframes scaleUp {
+      from { transform: scale(0.8); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    .modal h3 {
+      color: #3b82f6;
+      margin-bottom: 15px;
+    }
+    .modal textarea {
+      width: 100%;
+      height: 90px;
+      border-radius: 10px;
+      border: 1px solid rgba(59,130,246,0.3);
+      background: rgba(17, 24, 39, 0.8);
+      color: white;
+      font-family: "Poppins";
+      padding: 10px;
+      outline: none;
+      resize: none;
+      transition: border 0.3s ease;
+    }
+    .modal textarea:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 10px rgba(59,130,246,0.3);
+    }
+    .modal-buttons {
+      margin-top: 20px;
+      display: flex;
+      justify-content: space-between;
+    }
+    .btn {
+      padding: 10px 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    .btn.cancel {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid #ccc;
+      color: #e5e7eb;
+    }
+    .btn.send {
+      background: #2563eb;
+      border: none;
+      color: white;
+    }
+    .btn.send:hover {
+      background: #1d4ed8;
+    }
+    .btn.delete {
+      background: #dc2626;
+      border: none;
+      color: white;
+    }
+
+    /* --- TOAST --- */
+    .toast {
+      position: fixed;
+      bottom: 25px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(37,99,235,0.9);
+      color: white;
+      padding: 12px 22px;
+      border-radius: 10px;
+      font-weight: 500;
+      font-size: 15px;
+      box-shadow: 0 0 15px rgba(37,99,235,0.4);
+      animation: slideUp 0.5s ease, fadeOut 0.5s ease 2.5s forwards;
+      z-index: 2000;
+    }
+    @keyframes slideUp {
+      from { transform: translate(-50%, 30px); opacity: 0; }
+      to { transform: translate(-50%, 0); opacity: 1; }
+    }
+    @keyframes fadeOut {
+      to { opacity: 0; transform: translate(-50%, 30px); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="feedbackContainer">
+    <div class="loading"><i class="fa-solid fa-spinner fa-spin"></i> Cargando feedback...</div>
+  </div>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyA9hQgLtByVB-yoABZslzUwD-YplZYquLM",
+      authDomain: "ffh4x-v41.firebaseapp.com",
+      databaseURL: "https://ffh4x-v41-default-rtdb.firebaseio.com/",
+      projectId: "ffh4x-v41",
+      storageBucket: "ffh4x-v41.appspot.com",
+      messagingSenderId: "93601316403",
+      appId: "1:93601316403:android:e536e42e949c638304ad46"
+    };
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const feedbackContainer = document.getElementById("feedbackContainer");
+
+    db.ref("feedb").on("value", (snapshot) => {
+      feedbackContainer.innerHTML = "";
+      if (snapshot.exists()) {
+        snapshot.forEach((child) => {
+          const key = child.key;
+          const data = child.val();
+          const fecha = data.fecha || new Date().toLocaleString();
+
+          const card = document.createElement("div");
+          card.classList.add("feedback-card");
+          card.innerHTML = `
+            <div class="feedback-name">
+              <span><i class="fa-solid fa-user"></i> ${data.nome || "Anónimo"}</span>
+              <div class="icons">
+                <button class="icon-btn" onclick="abrirModalResponder('${key}', '${data.nome || "Anónimo"}')"><i class="fa-solid fa-reply"></i></button>
+                <button class="icon-btn" onclick="abrirModalEliminar('${key}')"><i class="fa-solid fa-trash"></i></button>
+              </div>
+            </div>
+            <div class="feedback-msg">${data.feed || ""}</div>
+            ${data.resposta ? `<div class="feedback-resp"><b>Respuesta:</b> ${data.resposta}</div>` : ""}
+            <div class="feedback-date">${fecha}</div>
+          `;
+          feedbackContainer.appendChild(card);
+        });
+      } else {
+        feedbackContainer.innerHTML = "<div class='loading'>🚫 No hay feedback disponible.</div>";
+      }
+    });
+
+    function abrirModalResponder(id, nombre) {
+      const modal = document.createElement("div");
+      modal.classList.add("modal-overlay");
+      modal.innerHTML = `
+        <div class="modal">
+          <h3>Responder a ${nombre}</h3>
+          <textarea id="respuesta" placeholder="Escribe tu respuesta..."></textarea>
+          <div class="modal-buttons">
+            <button class="btn cancel" onclick="cerrarModal(this)">Cancelar</button>
+            <button class="btn send" onclick="enviarRespuesta('${id}', this)">Enviar</button>
+          </div>
+        </div>`;
+      document.body.appendChild(modal);
+    }
+
+    function enviarRespuesta(id, btn) {
+      const respuesta = btn.closest(".modal").querySelector("#respuesta").value.trim();
+      if (respuesta === "") return mostrarToast("⚠️ Escribe una respuesta");
+      db.ref("feedb/" + id + "/resposta").set(respuesta)
+        .then(() => {
+          mostrarToast("✅ Respuesta enviada");
+          cerrarModal(btn);
+        })
+        .catch(() => mostrarToast("⚠️ Error al enviar"));
+    }
+
+    function abrirModalEliminar(id) {
+      const modal = document.createElement("div");
+      modal.classList.add("modal-overlay");
+      modal.innerHTML = `
+        <div class="modal">
+          <h3 style="color:#f87171;">¿Eliminar feedback?</h3>
+          <p>Esta acción no se puede deshacer.</p>
+          <div class="modal-buttons">
+            <button class="btn cancel" onclick="cerrarModal(this)">Cancelar</button>
+            <button class="btn delete" onclick="confirmarEliminar('${id}', this)">Eliminar</button>
+          </div>
+        </div>`;
+      document.body.appendChild(modal);
+    }
+
+    function confirmarEliminar(id, btn) {
+      db.ref("feedb/" + id).remove()
+        .then(() => {
+          mostrarToast("🗑️ Feedback eliminado");
+          cerrarModal(btn);
+        })
+        .catch(() => mostrarToast("⚠️ Error al eliminar"));
+    }
+
+    function cerrarModal(btn) {
+      btn.closest(".modal-overlay").remove();
+    }
+
+    function mostrarToast(msg) {
+      const toast = document.createElement("div");
+      toast.classList.add("toast");
+      toast.textContent = msg;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 3000);
+    }
+  </script>
+</body>
+</html>

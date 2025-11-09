@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Enviar Datas</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <style>
+    body {
+      background: radial-gradient(circle at top left, #060912, #0a0d1c 70%);
+      color: #fff;
+      font-family: "Poppins", sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 700px;
+      margin: 0 auto;
+      background: rgba(0, 255, 255, 0.05);
+      border: 1px solid rgba(0, 255, 255, 0.2);
+      border-radius: 20px;
+      padding: 25px;
+      box-shadow: 0 0 25px rgba(0, 255, 255, 0.08);
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      background: linear-gradient(90deg, #00ffff, #00bcd4);
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+    label { display: block; margin: 10px 0 5px; color: #bffcff; }
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 10px;
+      outline: none;
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+      font-size: 0.95rem;
+      margin-bottom: 12px;
+      transition: 0.3s;
+    }
+    input:focus, textarea:focus {
+      background: rgba(0, 255, 255, 0.1);
+      box-shadow: 0 0 8px rgba(0, 255, 255, 0.3);
+    }
+    .radio-group {
+      display: flex; flex-wrap: wrap; gap: 10px; margin: 10px 0 20px;
+    }
+    .radio-option {
+      display: flex; align-items: center;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(0, 255, 255, 0.2);
+      border-radius: 12px; padding: 8px 14px;
+      cursor: pointer; transition: 0.3s ease;
+    }
+    .radio-option:hover {
+      background: rgba(0, 255, 255, 0.08);
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
+    }
+    .radio-option input[type="radio"] {
+      appearance: none; width: 18px; height: 18px;
+      border: 2px solid #00ffff; border-radius: 50%;
+      margin-right: 8px; cursor: pointer; transition: 0.25s;
+    }
+    .radio-option input[type="radio"]:checked {
+      background: radial-gradient(circle, #00ffff 40%, transparent 50%);
+      box-shadow: 0 0 8px #00ffff;
+    }
+    .radio-option span { font-size: 0.9rem; color: #e0ffff; }
+    button {
+      width: 100%; padding: 12px; font-size: 1rem; font-weight: bold;
+      border: none; border-radius: 12px;
+      background: linear-gradient(90deg, #00bcd4, #00ffff);
+      color: #000; cursor: pointer; transition: 0.3s;
+    }
+    button:hover {
+      background: linear-gradient(90deg, #00ffff, #00bcd4);
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.4);
+    }
+    .success { display: none; text-align: center; color: #00ffcc; margin-top: 10px; }
+    .toast {
+      visibility: hidden; min-width: 240px;
+      background: rgba(0, 255, 255, 0.1);
+      border: 1px solid rgba(0, 255, 255, 0.3);
+      color: #bffcff; text-align: center;
+      border-radius: 12px; padding: 14px;
+      position: fixed; left: 50%; bottom: 40px;
+      transform: translateX(-50%);
+      font-size: 0.95rem; backdrop-filter: blur(10px);
+      box-shadow: 0 0 12px rgba(0, 255, 255, 0.2);
+      z-index: 10; opacity: 0;
+      transition: opacity 0.4s ease, bottom 0.4s ease;
+    }
+    .toast.show { visibility: visible; opacity: 1; bottom: 60px; }
+    .custom-select { position: relative; width: 100%; margin-bottom: 20px; }
+    .select-btn {
+      width: 100%; background: rgba(255, 255, 255, 0.08);
+      border: none; border-radius: 10px; color: #bffcff;
+      padding: 10px; text-align: left; cursor: pointer;
+      font-size: 0.95rem; display: flex; justify-content: space-between; align-items: center; transition: 0.3s;
+    }
+    .select-btn:hover {
+      background: rgba(0, 255, 255, 0.1);
+      box-shadow: 0 0 8px rgba(0, 255, 255, 0.2);
+    }
+    .select-content {
+      display: none; position: absolute; top: 105%; left: 0;
+      width: 100%; background: rgba(0, 20, 30, 0.95);
+      border: 1px solid rgba(0, 255, 255, 0.2);
+      border-radius: 12px; box-shadow: 0 0 15px rgba(0, 255, 255, 0.15);
+      z-index: 10; overflow: hidden; animation: fadeIn 0.3s ease;
+    }
+    .select-content.active { display: block; }
+    .option { padding: 10px 15px; color: #bffcff; cursor: pointer; transition: 0.25s; }
+    .option:hover { background: rgba(0, 255, 255, 0.15); color: #00ffff; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2><i class="fa-solid fa-database"></i> Enviar Datas</h2>
+
+    <label>Nombre del Archivo</label>
+    <input type="text" id="feed" placeholder="Ejemplo: FreeFireDatav3.zip" />
+
+    <label>Versión</label>
+    <input type="text" id="version" placeholder="Ejemplo: Free Fire Max v3.0" />
+
+    <label>Descripción</label>
+    <textarea id="desc" rows="3" placeholder="Describe la actualización..."></textarea>
+
+    <label>Link del Archivo (DATA o APK)</label>
+    <input type="text" id="feedback" placeholder="https://tuarchivo.com/data.zip" />
+
+    <!-- 🌟 Campo extra para ícono del APK -->
+    <div id="iconField" style="display:none;">
+      <label>Link del Icono del APK</label>
+      <input type="text" id="iconLink" placeholder="https://tusitio.com/icon.png" />
+    </div>
+
+    <label>Estado del Servidor</label>
+    <div class="custom-select">
+      <button class="select-btn" id="serverBtn">
+        <span id="selectedServer">Seleccionar estado...</span>
+        <i class="fa-solid fa-chevron-down"></i>
+      </button>
+      <div class="select-content" id="serverMenu">
+        <div class="option">TRUE</div>
+        <div class="option">MANTENIMIENTO</div>
+        <div class="option">INDISPONIBLE</div>
+      </div>
+    </div>
+
+    <label>Links de Imágenes</label>
+    <input type="text" id="img1" placeholder="URL Imagen 1" />
+    <input type="text" id="img2" placeholder="URL Imagen 2" />
+    <input type="text" id="img3" placeholder="URL Imagen 3" />
+
+    <label>Link del Tutorial</label>
+    <input type="text" id="tutorial" placeholder="https://youtu.be/..." />
+
+    <label>Tipo de Archivo</label>
+    <div class="radio-group" id="fileTypeGroup">
+      <label class="radio-option"><input type="radio" name="fileType" value="DATA" checked /><span>DATA</span></label>
+      <label class="radio-option"><input type="radio" name="fileType" value="APK" /><span>APK</span></label>
+    </div>
+
+    <label>Orientación de Imágenes</label>
+    <div class="radio-group">
+      <label class="radio-option"><input type="radio" name="graby" value="VER" checked /><span>VERTICAL</span></label>
+      <label class="radio-option"><input type="radio" name="graby" value="HOR" /><span>HORIZONTAL</span></label>
+    </div>
+
+    <label>Tipo de Publicación</label>
+    <div class="radio-group">
+      <label class="radio-option"><input type="radio" name="sp" value="FREE" checked /><span>FREE</span></label>
+      <label class="radio-option"><input type="radio" name="sp" value="SHOP" /><span>SHOP</span></label>
+    </div>
+
+    <button id="sendBtn"><i class="fa-solid fa-paper-plane"></i> Enviar Datas</button>
+    <div class="success" id="successMsg">✅ Datos enviados correctamente</div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyA9hQgLtByVB-yoABZslzUwD-YplZYquLM",
+    authDomain: "ffh4x-v41.firebaseapp.com",
+    databaseURL: "https://ffh4x-v41-default-rtdb.firebaseio.com/",
+    projectId: "ffh4x-v41",
+    storageBucket: "ffh4x-v41.appspot.com",
+    messagingSenderId: "93601316403",
+    appId: "1:93601316403:android:e536e42e949c638304ad46"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+
+  const database = firebase.database().ref("ddd");
+  const sendBtn = document.getElementById("sendBtn");
+  const successMsg = document.getElementById("successMsg");
+  const toast = document.getElementById("toast");
+
+  function showToast(msg) {
+    toast.textContent = msg;
+    toast.classList.add("show");
+    setTimeout(() => toast.classList.remove("show"), 2500);
+  }
+
+  let selectedServer = "";
+  const serverBtn = document.getElementById("serverBtn");
+  const serverMenu = document.getElementById("serverMenu");
+  const selectedText = document.getElementById("selectedServer");
+
+  serverBtn.addEventListener("click", () => {
+    serverMenu.classList.toggle("active");
+  });
+
+  document.querySelectorAll(".option").forEach(option => {
+    option.addEventListener("click", () => {
+      selectedServer = option.textContent;
+      selectedText.textContent = "🟢 " + selectedServer;
+      serverMenu.classList.remove("active");
+      showToast("Servidor: " + selectedServer);
+    });
+  });
+
+  // 🌟 Mostrar u ocultar campo del icono según tipo
+  const iconField = document.getElementById("iconField");
+  document.querySelectorAll("input[name='fileType']").forEach(radio => {
+    radio.addEventListener("change", () => {
+      if (radio.value === "APK" && radio.checked) {
+        iconField.style.display = "block";
+      } else if (radio.value === "DATA" && radio.checked) {
+        iconField.style.display = "none";
+      }
+    });
+  });
+
+  function clearFields() {
+    document.querySelectorAll("input, textarea").forEach(el => {
+      if (el.type === "radio") return;
+      el.value = "";
+    });
+    document.querySelector("input[name='fileType'][value='DATA']").checked = true;
+    iconField.style.display = "none";
+    document.querySelector("input[name='graby'][value='VER']").checked = true;
+    document.querySelector("input[name='sp'][value='FREE']").checked = true;
+  }
+
+  sendBtn.addEventListener("click", () => {
+    const feed = document.getElementById("feedback").value.trim();
+    const feedback = document.getElementById("feed").value.trim();
+    const version = document.getElementById("version").value.trim();
+    const desc = document.getElementById("desc").value.trim();
+    const iconLink = document.getElementById("iconLink").value.trim();
+
+    if (!feedback || !version || !desc || !feed || !selectedServer) {
+      showToast("⚠️ Completa todos los campos obligatorios");
+      return;
+    }
+
+    const fileType = document.querySelector("input[name='fileType']:checked").value;
+
+    const data = {
+      feedback,
+      feed,
+      version,
+      linimg1: document.getElementById("img1").value,
+      linimg2: document.getElementById("img2").value,
+      linimg3: document.getElementById("img3").value,
+      tutoriasli: document.getElementById("tutorial").value,
+      desc,
+      file: fileType,
+      graby: document.querySelector("input[name='graby']:checked").value,
+      sp: document.querySelector("input[name='sp']:checked").value,
+      server: selectedServer,
+      fecha: Date.now()
+    };
+
+    // ✅ Solo si es APK, agrega el icono
+    if (fileType === "APK" && iconLink) {
+      data.ic = iconLink;
+    }
+
+    database.push(data)
+      .then(() => {
+        successMsg.style.display = "block";
+        showToast("✅ Datos enviados correctamente");
+        clearFields();
+        setTimeout(() => successMsg.style.display = "none", 2500);
+      })
+      .catch(err => showToast("❌ Error al enviar: " + err.message));
+  });
+  </script>
+</body>
+</html>

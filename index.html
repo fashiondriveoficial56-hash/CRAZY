@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CrazyMods - Login</title>
+
+  <!-- Font Awesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+  <style>
+    /* ==== Toast Estilo Neón ==== */
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #1e1e2f;
+      color: #fff;
+      padding: 12px 18px;
+      border-radius: 10px;
+      font-size: 14px;
+      min-width: 220px;
+      box-shadow: 0 0 15px rgba(0, 255, 255, 0.7);
+      border: 1px solid rgba(0, 255, 255, 0.8);
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      z-index: 9999;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .toast.success {
+      box-shadow: 0 0 15px rgba(0, 255, 127, 0.8);
+      border-color: #00ff7f;
+    }
+    .toast.error {
+      box-shadow: 0 0 15px rgba(255, 50, 50, 0.8);
+      border-color: #ff3232;
+    }
+    .toast.info {
+      box-shadow: 0 0 15px rgba(0, 150, 255, 0.8);
+      border-color: #0096ff;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    
+    <!-- LOGO -->
+    <div class="app-logo">
+      <div class="logo-bg">
+        <i class="fa-solid fa-gun"></i>
+      </div>
+      <h2 class="brand">Krizz<span>Mods</span></h2>
+    </div>
+
+    <h1 class="title">Iniciar Sesión</h1>
+    <p class="subtitle">Accede a tu cuenta para continuar</p>
+
+    <!-- Formulario -->
+    <form id="loginForm" class="login-form">
+      <label for="usuario">USUARIO</label>
+      <div class="input-group">
+        <i class="fa-solid fa-user"></i>
+        <input type="text" id="usuario" placeholder="Ingresa tu usuario" required>
+      </div>
+
+      <label for="password">CONTRASEÑA</label>
+      <div class="input-group">
+        <i class="fa-solid fa-lock"></i>
+        <input type="password" id="password" placeholder="Ingresa tu contraseña" required>
+        <i class="fa-solid fa-eye" id="togglePassword"></i>
+      </div>
+
+      <button type="submit" class="btn-login">
+        <i class="fa-solid fa-right-to-bracket"></i> INICIAR SESIÓN
+      </button>
+    </form>
+
+    <!-- Enlaces -->
+    <p class="register-link">¿No tienes cuenta? <a href="register.html">Regístrate aquí</a></p>
+    <p class="forgot-password">¿Olvidaste tu contraseña?</p>
+
+    <!-- Divider -->
+    <div class="divider">
+      <span></span>
+      <p>O continúa con</p>
+      <span></span>
+    </div>
+
+    <!-- Botones sociales -->
+    <div class="social-login">
+      <button class="btn-social telegram">
+        <i class="fa-brands fa-telegram"></i> Telegram
+      </button>
+      <button class="btn-social whatsapp">
+        <i class="fa-brands fa-whatsapp"></i> WhatsApp
+      </button>
+    </div>
+  </div>
+
+  <!-- Firebase Config -->
+  <script src="js/firebase-config.js"></script>
+
+  <script>
+    // ==== TOAST FUNCIONAL ====
+    function showToast(message, type = "info") {
+      const oldToast = document.querySelector(".toast");
+      if (oldToast) oldToast.remove();
+
+      const toast = document.createElement("div");
+      toast.className = `toast ${type}`;
+      toast.textContent = message;
+      document.body.appendChild(toast);
+
+      setTimeout(() => toast.classList.add("show"), 100);
+
+      setTimeout(() => {
+        toast.classList.remove("show");
+        setTimeout(() => toast.remove(), 400);
+      }, 3000);
+    }
+
+    // ==== LOGIN FIREBASE ====
+    const loginForm = document.getElementById("loginForm");
+
+    loginForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const username = document.getElementById("usuario").value.trim();
+      const password = document.getElementById("password").value.trim();
+
+      // No showToast aquí → el navegador muestra el aviso nativo ⚠️
+      if (!username || !password) return;
+
+      if (typeof database === "undefined") {
+        showToast("❌ Error: Firebase no inicializado.", "error");
+        return;
+      }
+
+      database.ref("users/" + username).get().then((snapshot) => {
+        if (snapshot.exists()) {
+          const userData = snapshot.val();
+          if (userData.password === password) {
+            localStorage.setItem("currentUser", JSON.stringify({
+              username: username,
+              email: userData.email
+            }));
+            showToast("✅ Bienvenido " + username, "success");
+            setTimeout(() => window.location.href = "dashboard.html", 1200);
+          } else {
+            showToast("❌ Contraseña incorrecta.", "error");
+          }
+        } else {
+          showToast("❌ Usuario no encontrado.", "error");
+        }
+      }).catch(err => {
+        showToast("⚠️ Error de conexión a Firebase", "error");
+      });
+    });
+
+    // ==== MOSTRAR / OCULTAR CONTRASEÑA ====
+    const togglePassword = document.getElementById("togglePassword");
+    const passwordInput = document.getElementById("password");
+
+    togglePassword.addEventListener("click", () => {
+      const isPassword = passwordInput.type === "password";
+      passwordInput.type = isPassword ? "text" : "password";
+      togglePassword.classList.toggle("fa-eye");
+      togglePassword.classList.toggle("fa-eye-slash");
+    });
+  </script>
+</body>
+</html>

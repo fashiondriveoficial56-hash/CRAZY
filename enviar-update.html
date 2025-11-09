@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Enviar Actualización</title>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+  />
+  <style>
+    body {
+      margin: 0;
+      font-family: "Poppins", sans-serif;
+      background: radial-gradient(circle at top left, #0a192f, #112240, #1e3a8a);
+      color: #e0e0e0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 20px;
+      animation: gradientShift 12s infinite alternate ease-in-out;
+    }
+    @keyframes gradientShift {
+      0% { background: radial-gradient(circle at top left, #0a192f, #112240, #1e3a8a); }
+      100% { background: radial-gradient(circle at bottom right, #0b1522, #172554, #3b82f6); }
+    }
+
+    .update-box {
+      width: 90%;
+      max-width: 380px;
+      background: rgba(17, 24, 39, 0.85);
+      border: 1px solid rgba(59, 130, 246, 0.4);
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: 0 0 25px rgba(59, 130, 246, 0.25);
+      backdrop-filter: blur(12px);
+      position: relative;
+      overflow: hidden;
+      animation: fadeIn 0.6s ease-in-out;
+      margin-bottom: 25px;
+    }
+
+    .update-box::before {
+      content: "";
+      position: absolute;
+      top: -2px; left: -2px; right: -2px; bottom: -2px;
+      background: linear-gradient(45deg, transparent, rgba(59,130,246,0.5), transparent);
+      border-radius: 18px;
+      animation: glow 4s linear infinite;
+      z-index: 0;
+    }
+    @keyframes glow {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    h2 {
+      color: #3b82f6;
+      text-align: center;
+      margin-bottom: 18px;
+      font-size: 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    label {
+      font-size: 14px;
+      color: #a8b1ff;
+      margin-bottom: 5px;
+      display: block;
+      z-index: 1;
+      position: relative;
+    }
+
+    input, textarea {
+      width: 100%;
+      background: rgba(17, 24, 39, 0.9);
+      border: 1px solid rgba(59,130,246,0.3);
+      color: white;
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-family: "Poppins";
+      font-size: 14px;
+      outline: none;
+      margin-bottom: 14px;
+      position: relative;
+      z-index: 1;
+      transition: border 0.3s, box-shadow 0.3s;
+    }
+
+    input:focus, textarea:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 10px rgba(59,130,246,0.4);
+    }
+
+    textarea {
+      height: 100px;
+      resize: none;
+    }
+
+    .btn-send {
+      width: 100%;
+      background: linear-gradient(90deg, #2563eb, #3b82f6);
+      border: none;
+      color: white;
+      font-weight: 600;
+      font-size: 15px;
+      border-radius: 10px;
+      padding: 11px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      z-index: 1;
+    }
+    .btn-send:hover {
+      background: linear-gradient(90deg, #1e40af, #2563eb);
+      transform: scale(1.03);
+      box-shadow: 0 0 15px rgba(37,99,235,0.6);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(25px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 25px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(17, 24, 39, 0.95);
+      border: 1px solid rgba(59,130,246,0.5);
+      color: #ffffff;
+      padding: 12px 25px;
+      border-radius: 12px;
+      font-weight: 500;
+      font-size: 15px;
+      box-shadow: 0 0 25px rgba(59,130,246,0.4);
+      backdrop-filter: blur(10px);
+      overflow: hidden;
+      animation: slideUp 0.5s ease, fadeOut 0.5s ease 2.8s forwards, pulseLight 2s infinite ease-in-out;
+      z-index: 3000;
+    }
+
+    .toast::before {
+      content: "";
+      position: absolute;
+      top: -2px; left: -2px; right: -2px; bottom: -2px;
+      background: linear-gradient(45deg, transparent, rgba(59,130,246,0.6), transparent);
+      border-radius: 12px;
+      animation: glow 4s linear infinite;
+      z-index: -1;
+    }
+
+    @keyframes slideUp {
+      from { transform: translate(-50%, 30px); opacity: 0; }
+      to { transform: translate(-50%, 0); opacity: 1; }
+    }
+    @keyframes fadeOut {
+      to { opacity: 0; transform: translate(-50%, 30px); }
+    }
+    @keyframes pulseLight {
+      0%, 100% { box-shadow: 0 0 20px rgba(59,130,246,0.5); }
+      50% { box-shadow: 0 0 35px rgba(59,130,246,0.8); }
+    }
+
+    .history {
+      width: 90%;
+      max-width: 380px;
+      background: rgba(17, 24, 39, 0.8);
+      border-radius: 15px;
+      padding: 10px;
+      border: 1px solid rgba(59,130,246,0.3);
+    }
+
+    .history-item {
+      padding: 12px;
+      border-bottom: 1px solid rgba(59,130,246,0.2);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .history-item:last-child {
+      border-bottom: none;
+    }
+
+    .status-btn {
+      background: linear-gradient(90deg, #16a34a, #22c55e);
+      border: none;
+      color: white;
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .status-btn.desactivada {
+      background: linear-gradient(90deg, #991b1b, #ef4444);
+    }
+
+    .status-btn:hover {
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+  <div class="update-box">
+    <h2><i class="fa-solid fa-upload"></i> Enviar Actualización</h2>
+
+    <label for="version">Versión</label>
+    <input type="text" id="version" placeholder="Ej: V3.0" />
+
+    <label for="miniversion">Mini Versión</label>
+    <input type="text" id="miniversion" placeholder="Ej: 3.1.2" />
+
+    <label for="titulo">Título de la actualización</label>
+    <input type="text" id="titulo" placeholder="Ej: Aviso" />
+
+    <label for="mensaje">Mensaje (puedes usar HTML)</label>
+    <textarea id="mensaje" placeholder="Ej: <center><font size='5'>🔥 Nueva versión disponible</font></center>"></textarea>
+
+    <label for="link">Link o URL de descarga</label>
+    <input type="text" id="link" placeholder="Ej: https://youtu.be/xxxxx" />
+
+    <button class="btn-send" onclick="enviarActualizacion()">
+      <i class="fa-solid fa-paper-plane"></i> Enviar
+    </button>
+  </div>
+
+  <div class="history">
+    <h3 style="text-align:center;color:#60a5fa;">Historial de Actualizaciones</h3>
+    <div id="historial"></div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+  <script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyA9hQgLtByVB-yoABZslzUwD-YplZYquLM",
+    authDomain: "ffh4x-v41.firebaseapp.com",
+    databaseURL: "https://ffh4x-v41-default-rtdb.firebaseio.com/",
+    projectId: "ffh4x-v41",
+    storageBucket: "ffh4x-v41.appspot.com",
+    messagingSenderId: "93601316403",
+    appId: "1:93601316403:android:e536e42e949c638304ad46"
+  };
+
+  if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  function mostrarToast(msg) {
+    const toast = document.createElement("div");
+    toast.classList.add("toast");
+    toast.innerHTML = `<i class="fa-solid fa-circle-check"></i> ${msg}`;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3200);
+  }
+
+  function enviarActualizacion() {
+    const version = document.getElementById("version").value.trim();
+    const miniversion = document.getElementById("miniversion").value.trim();
+    const titulo = document.getElementById("titulo").value.trim();
+    const mensaje = document.getElementById("mensaje").value.trim();
+    const link = document.getElementById("link").value.trim();
+
+    if (!titulo || !mensaje || !link || !version || !miniversion) {
+      mostrarToast("⚠️ Completa todos los campos");
+      return;
+    }
+
+    const map = {
+      version,
+      miniversion,
+      titulo,
+      mensaje,
+      link,
+      mostrar: "true",
+      fecha: new Date().toLocaleString(),
+
+      // 🟢 NUEVO → campo para indicar que esta versión NO debe recibir el alert
+      excluir: version
+    };
+
+    const id = db.ref("data/historial").push().key;
+    db.ref("data/historial/" + id).set(map);
+    db.ref("data/getdata").set(map); // 🔹 mantiene compatibilidad
+
+    db.ref("data/historial").once("value").then(snapshot => {
+      snapshot.forEach(child => {
+        if (child.key !== id) db.ref("data/historial/" + child.key + "/mostrar").set("false");
+      });
+    });
+
+    mostrarToast("✅ Actualización enviada correctamente");
+    ["version","miniversion","titulo","mensaje","link"].forEach(id => document.getElementById(id).value = "");
+  }
+
+  db.ref("data/historial").on("value", snap => {
+    const historialDiv = document.getElementById("historial");
+    historialDiv.innerHTML = "";
+    snap.forEach(child => {
+      const data = child.val();
+      const estado = data.mostrar === "true";
+      const div = document.createElement("div");
+      div.className = "history-item";
+      div.innerHTML = `
+        <div>
+          <strong>${data.titulo}</strong><br>
+          <small>${data.fecha}</small><br>
+          <small>Versión: ${data.version || "-"}</small> | 
+          <small>Mini: ${data.miniversion || "-"}</small>
+        </div>
+        <button class="status-btn ${estado ? "" : "desactivada"}" onclick="toggleEstado('${child.key}', ${estado})">
+          ${estado ? "Activada" : "Desactivada"}
+        </button>
+      `;
+      historialDiv.prepend(div);
+    });
+  });
+
+  function toggleEstado(id, actual) {
+    db.ref("data/historial").once("value").then(snapshot => {
+      snapshot.forEach(child => {
+        db.ref("data/historial/" + child.key + "/mostrar").set(child.key === id ? (!actual).toString() : "false");
+      });
+      db.ref("data/historial/" + id).once("value").then(snap => {
+        db.ref("data/getdata").set(snap.val());
+        mostrarToast("✅ Estado actualizado");
+      });
+    });
+  }
+</script>
+</body>
+</html>

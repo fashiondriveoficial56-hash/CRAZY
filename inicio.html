@@ -1,0 +1,309 @@
+<!DOCTYPE html>  
+<html lang="es">  
+<head>  
+  <meta charset="UTF-8" />  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />  
+  <title>CrazyMods Dashboard ✨</title>  
+  
+  <!-- Librerías -->  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">  
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>  
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>  
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>  
+  
+  <style>  
+    body {  
+      margin: 0;  
+      padding: 30px;  
+      font-family: 'Poppins', sans-serif;  
+      color: #fff;  
+      background: radial-gradient(circle at 20% 20%, #040b1a, #01030a 80%);  
+      background-attachment: fixed;  
+      overflow-x: hidden;  
+    }  
+    h1 {  
+      text-align: center;  
+      font-size: 2.5rem;  
+      background: linear-gradient(90deg, #00ffff, #0077ff, #00ffff);  
+      -webkit-background-clip: text;  
+      color: transparent;  
+      text-shadow: 0 0 25px #00ffff55;  
+      animation: glowText 3s linear infinite;  
+      margin-bottom: 50px;  
+    }  
+    @keyframes glowText {  
+      0% { text-shadow: 0 0 15px #00ffff; }  
+      50% { text-shadow: 0 0 30px #00ffffaa; }  
+      100% { text-shadow: 0 0 15px #00ffff; }  
+    }  
+    .stats-container {  
+      display: grid;  
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));  
+      gap: 30px;  
+      margin-bottom: 50px;  
+    }  
+    .stat-card {  
+      position: relative;  
+      background: rgba(255, 255, 255, 0.08);  
+      border-radius: 20px;  
+      padding: 30px;  
+      text-align: center;  
+      box-shadow: 0 0 25px rgba(0,255,255,0.15);  
+      overflow: hidden;  
+      backdrop-filter: blur(10px);  
+      transition: all 0.4s ease;  
+    }  
+    .stat-card:hover {  
+      transform: translateY(-8px) scale(1.03);  
+      box-shadow: 0 0 40px rgba(0,255,255,0.35);  
+    }  
+    .stat-card::before {  
+      content: "";  
+      position: absolute;  
+      top: -50%;  
+      left: -50%;  
+      width: 200%;  
+      height: 200%;  
+      background: conic-gradient(from 180deg, transparent, rgba(0,255,255,0.2), transparent);  
+      animation: rotateGlow 5s linear infinite;  
+      z-index: 0;  
+    }  
+    @keyframes rotateGlow {  
+      from { transform: rotate(0deg); }  
+      to { transform: rotate(360deg); }  
+    }  
+    .stat-icon {  
+      font-size: 2.2rem;  
+      color: #00ffff;  
+      margin-bottom: 10px;  
+      position: relative;  
+      z-index: 2;  
+    }  
+    .stat-title {  
+      font-weight: 600;  
+      color: #bffcff;  
+      font-size: 1.1rem;  
+      margin-bottom: 5px;  
+      position: relative;  
+      z-index: 2;  
+    }  
+    .stat-value {  
+      font-size: 2rem;  
+      font-weight: bold;  
+      color: #00eaff;  
+      position: relative;  
+      z-index: 2;  
+    }  
+    .charts-section {  
+      display: grid;  
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));  
+      gap: 40px;  
+      margin-bottom: 60px;  
+    }  
+    .chart-card {  
+      background: rgba(255,255,255,0.05);  
+      border-radius: 18px;  
+      padding: 25px;  
+      box-shadow: 0 0 25px rgba(0,255,255,0.1);  
+      backdrop-filter: blur(10px);  
+      border: 1px solid rgba(0,255,255,0.2);  
+    }  
+    .users-list {  
+      display: grid;  
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));  
+      gap: 25px;  
+    }  
+    .user-card {  
+      background: rgba(255,255,255,0.07);  
+      border: 1px solid rgba(0,255,255,0.2);  
+      border-radius: 15px;  
+      padding: 20px;  
+      box-shadow: 0 0 20px rgba(0,255,255,0.1);  
+      transition: all 0.3s ease;  
+    }  
+    .user-card:hover {  
+      transform: translateY(-6px);  
+      box-shadow: 0 0 30px rgba(0,255,255,0.4);  
+    }  
+    .user-header {  
+      display: flex;  
+      justify-content: space-between;  
+      align-items: center;  
+      margin-bottom: 8px;  
+    }  
+    .status-badge {  
+      padding: 4px 10px;  
+      border-radius: 10px;  
+      font-size: 0.8em;  
+      font-weight: 600;  
+    }  
+    .status-activo { background: rgba(0,255,0,0.2); color: #00ff99; }  
+    .status-inactivo { background: rgba(255,0,0,0.2); color: #ff7777; }  
+    .no-users {  
+      text-align: center;  
+      color: #aeefff;  
+      margin-top: 25px;  
+      font-style: italic;  
+    }  
+  </style>  
+</head>  
+  
+<body>  
+  <h1><i class="fa-solid fa-chart-column"></i> CrazyMods Dashboard</h1>  
+  
+  <div class="stats-container">  
+    <div class="stat-card">  
+      <div class="stat-icon"><i class="fa-solid fa-users"></i></div>  
+      <div class="stat-title">Total Usuarios</div>  
+      <div id="totalUsers" class="stat-value">0</div>  
+    </div>  
+    <div class="stat-card">  
+      <div class="stat-icon"><i class="fa-solid fa-sun"></i></div>  
+      <div class="stat-title">Activos Hoy</div>  
+      <div id="activeToday" class="stat-value">0</div>  
+    </div>  
+    <div class="stat-card">  
+      <div class="stat-icon"><i class="fa-solid fa-moon"></i></div>  
+      <div class="stat-title">Inactivos (+3 días)</div>  
+      <div id="inactiveUsers" class="stat-value">0</div>  
+    </div>  
+    <div class="stat-card">  
+      <div class="stat-icon"><i class="fa-solid fa-chart-line"></i></div>  
+      <div class="stat-title">Entradas Totales</div>  
+      <div id="totalEntradas" class="stat-value">0</div>  
+    </div>  
+  </div>  
+  
+  <div class="charts-section">  
+    <div class="chart-card"><canvas id="userChart"></canvas></div>  
+    <div class="chart-card"><canvas id="entryChart"></canvas></div>  
+    <div class="chart-card"><canvas id="countryChart"></canvas></div> <!-- 🌍 Nuevo gráfico de países -->  
+  </div>  
+  
+  <div id="usersList" class="users-list"></div>  
+  <p id="noUsers" class="no-users">No hay usuarios registrados aún.</p>  
+  
+  <script>  
+    const firebaseConfig = {  
+      apiKey: "AIzaSyA9hQgLtByVB-yoABZslzUwD-YplZYquLM",  
+      authDomain: "ffh4x-v41.firebaseapp.com",  
+      databaseURL: "https://ffh4x-v41-default-rtdb.firebaseio.com/",  
+      projectId: "ffh4x-v41",  
+      storageBucket: "ffh4x-v41.appspot.com",  
+      messagingSenderId: "93601316403",  
+      appId: "1:93601316403:android:e536e42e949c638304ad46"  
+    };  
+    firebase.initializeApp(firebaseConfig);  
+    const db = firebase.database().ref("usuarios");  
+    const now = Date.now();  
+    const oneDay = 86400000;  
+  
+    const userChart = new Chart(document.getElementById("userChart"), {  
+      type: "doughnut",  
+      data: {  
+        labels: ["Activos", "Inactivos"],  
+        datasets: [{  
+          data: [0, 0],  
+          backgroundColor: ["#00ffaaaa", "#ff444488"],  
+          borderColor: ["#00ffcc", "#ff6666"],  
+          borderWidth: 2,  
+        }],  
+      },  
+      options: { plugins: { legend: { labels: { color: "#fff" } } } }  
+    });  
+  
+    const entryChart = new Chart(document.getElementById("entryChart"), {  
+      type: "bar",  
+      data: { labels: [], datasets: [{ label: "Entradas por Usuario", data: [], backgroundColor: "#00ccff99", borderColor: "#00eaff", borderWidth: 1.5 }] },  
+      options: { scales: { x: { ticks: { color: "#aef" } }, y: { ticks: { color: "#aef" } } }, plugins: { legend: { labels: { color: "#fff" } } } }  
+    });  
+  
+    // 🌍 Nuevo gráfico por país  
+    const countryChart = new Chart(document.getElementById("countryChart"), {  
+      type: "pie",  
+      data: { labels: [], datasets: [{ data: [], backgroundColor: ["#00ffff88","#00ffcc88","#00ccff88","#0088ff88","#0044ff88","#00ffaa88"] }] },  
+      options: { plugins: { legend: { labels: { color: "#fff" } } } }  
+    });  
+  
+    db.on("value", snapshot => {  
+      const data = snapshot.val();  
+      const totalUsers = data ? Object.keys(data).length : 0;  
+      let totalEntradas = 0, activeToday = 0, inactiveUsers = 0;  
+      const usersList = document.getElementById("usersList");  
+      usersList.innerHTML = "";  
+  
+      if (!data) {  
+        document.getElementById("noUsers").style.display = "block";  
+        return;  
+      }  
+      document.getElementById("noUsers").style.display = "none";  
+  
+      const userNames = [], userEntries = [];  
+      const countryCount = {}; // 👈 nuevo contador de países  
+  
+      Object.entries(data).forEach(([uid, user]) => {  
+        if (!user.marca && user.device_brand) user.marca = user.device_brand;  
+        if (!user.modelo && user.device_model) user.modelo = user.device_model;  
+        if (!user.android && user.android_version) user.android = user.android_version;  
+        if (!user.idioma && user.language) user.idioma = user.language;  
+        if (!user.pais && user.country) user.pais = user.country;  
+  
+        const entradas = user.entradas || 0;  
+        totalEntradas += entradas;  
+  
+        const ultima = user.ultima_entrada || 0;  
+        const diff = now - ultima;  
+        const activoHoy = diff < oneDay;  
+        const inactivo = diff > (3 * oneDay);  
+        const activoAhora = user.activo_ahora === true;  
+  
+        if (activoHoy) activeToday++;  
+        if (inactivo) inactiveUsers++;  
+  
+        // 🔹 Contar países  
+        const pais = user.pais || "Desconocido";  
+        countryCount[pais] = (countryCount[pais] || 0) + 1;  
+  
+        userNames.push(uid.slice(0, 6));  
+        userEntries.push(entradas);  
+  
+        const card = document.createElement("div");  
+        card.className = "user-card";  
+        card.innerHTML = `  
+          <div class="user-header">  
+            <strong>${uid}</strong>  
+            <span class="status-badge ${activoAhora ? "status-activo" : inactivo ? "status-inactivo" : ""}">  
+              ${activoAhora ? "🟢 En línea" : inactivo ? "🔴 Inactivo" : "🕓 Desconectado"}  
+            </span>  
+          </div>  
+          <p><strong>Modelo:</strong> ${user.modelo || "Desconocido"}</p>  
+          <p><strong>Marca:</strong> ${user.marca || "Desconocida"}</p>  
+          <p><strong>Android:</strong> ${user.android || "?"}</p>  
+          <p><strong>Idioma:</strong> ${user.idioma || "?"}</p>  
+          <p><strong>País:</strong> ${user.pais || "Desconocido"}</p>  
+          <p><strong>Entradas:</strong> ${entradas}</p>  
+        `;  
+        usersList.appendChild(card);  
+      });  
+  
+      document.getElementById("totalUsers").textContent = totalUsers;  
+      document.getElementById("activeToday").textContent = activeToday;  
+      document.getElementById("inactiveUsers").textContent = inactiveUsers;  
+      document.getElementById("totalEntradas").textContent = totalEntradas;  
+  
+      // 🔄 Actualizar gráficos  
+      userChart.data.datasets[0].data = [activeToday, inactiveUsers];  
+      userChart.update();  
+  
+      entryChart.data.labels = userNames;  
+      entryChart.data.datasets[0].data = userEntries;  
+      entryChart.update();  
+  
+      // 🌍 Actualizar gráfico de países  
+      countryChart.data.labels = Object.keys(countryCount);  
+      countryChart.data.datasets[0].data = Object.values(countryCount);  
+      countryChart.update();  
+    });  
+  </script>  
+</body>  
+</html>

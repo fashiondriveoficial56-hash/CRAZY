@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CrazyMods Store</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+    }
+
+    body {
+      background-color: #0b0c10;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      text-align: center;
+    }
+
+    .logo {
+      font-size: 60px;
+      color: #00f5ff;
+      margin-bottom: 20px;
+      text-shadow: 0 0 20px #00f5ff;
+    }
+
+    h1 {
+      font-size: 36px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .crazy {
+      color: #00f5ff;
+      text-shadow: 0 0 15px #00f5ff;
+    }
+
+    .store {
+      color: #ff00a6;
+      text-shadow: 0 0 15px #ff00a6;
+    }
+
+    p {
+      color: #d1d1d1;
+      font-size: 15px;
+      margin-bottom: 40px;
+    }
+
+    .btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border: none;
+      color: white;
+      font-size: 15px;
+      font-weight: 600;
+      padding: 12px 0;
+      width: 250px; /* <-- ajustado al tamaño visual de la imagen */
+      border-radius: 14px; /* ni muy redondo ni cuadrado */
+      margin: 10px 0;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+
+    .btn i {
+      font-size: 16px;
+    }
+
+    .join {
+      background: linear-gradient(90deg, #00c3ff, #00f5ff);
+      box-shadow: 0 0 10px #00f5ff;
+    }
+
+    .join:hover {
+      box-shadow: 0 0 20px #00f5ff;
+      transform: translateY(-2px);
+    }
+
+    .login {
+      background: linear-gradient(90deg, #ff0080, #ff4da6);
+      box-shadow: 0 0 10px #ff00a6;
+    }
+
+    .login:hover {
+      box-shadow: 0 0 20px #ff00a6;
+      transform: translateY(-2px);
+    }
+
+    .more {
+      margin-top: 25px;
+      font-size: 14px;
+      color: #bfbfbf;
+      letter-spacing: 1px;
+    }
+  </style>
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</head>
+<body>
+  <div class="logo"><i class="fas fa-gamepad"></i></div>
+  <h1><span class="crazy">CrazyMods</span> <span class="store">Store</span></h1>
+  <p>La mejor tienda de llaves digitales para tus juegos favoritos</p>
+
+  <button class="btn join">
+    <i class="fas fa-user-plus"></i> ÚNETE GRATIS
+  </button>
+  <button class="btn login">
+    <i class="fas fa-sign-in-alt"></i> INICIAR SESIÓN
+  </button>
+
+  <div class="more">DESCUBRE MÁS</div>
+</body>
+</html>

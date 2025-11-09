@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Historial de Recargas | CrazyMods</title>
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+  <script src="js/firebase-config.js"></script>
+
+  <style>
+    :root{
+      --bg:#070717;
+      --card:#0f1120;
+      --neon:#00ffff;
+      --muted:#9aa4b2;
+    }
+    body{
+      margin:0;
+      font-family:"Poppins",system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;
+      background:linear-gradient(180deg,#050515 0%,#0b0b1a 100%);
+      color:#e6f7f8;
+      padding:28px;
+    }
+    h1{
+      font-size:20px;
+      margin:0 0 14px 0;
+      color:white;
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+    .card{
+      background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));
+      border:1px solid rgba(0,255,255,0.08);
+      box-shadow:0 6px 30px rgba(0,255,255,0.03);
+      padding:16px;
+      border-radius:12px;
+    }
+    .topbar{display:flex;gap:12px;align-items:center;margin-bottom:18px;flex-wrap:wrap;}
+    .controls{display:flex;gap:8px;align-items:center;margin-left:auto;}
+    input[type="search"],.btn{
+      background:transparent;
+      border:1px solid rgba(0,255,255,0.12);
+      color:var(--neon);
+      padding:8px 10px;
+      border-radius:8px;
+      outline:none;
+      min-width:160px;
+    }
+    .btn{cursor:pointer;background:linear-gradient(90deg,rgba(0,255,255,0.08),rgba(0,180,255,0.03));color:var(--neon);}
+    .btn.primary{background:linear-gradient(90deg,var(--neon),#66f0ff);color:#001;border:none;}
+    .table-wrap{margin-top:16px;overflow-x:auto;}
+    table{width:100%;border-collapse:collapse;min-width:800px;}
+    thead th{text-align:left;font-size:13px;padding:12px 10px;color:var(--muted);border-bottom:1px solid rgba(255,255,255,0.03);}
+    tbody td{padding:12px 10px;border-bottom:1px dashed rgba(255,255,255,0.03);color:#d6f9fb;font-size:14px;vertical-align:middle;}
+    tbody td i.copy-icon{
+      color:var(--neon);
+      cursor:pointer;
+      transition:0.2s;
+    }
+    tbody td i.copy-icon:hover{
+      color:#66f0ff;
+      transform:scale(1.2);
+    }
+    .small{font-size:12px;color:var(--muted);}
+    .toast{position:fixed;bottom:20px;right:20px;background:#0e1722;color:#fff;padding:10px 14px;border-radius:10px;font-size:14px;min-width:200px;
+      box-shadow:0 0 15px rgba(0,255,255,0.12);border:1px solid rgba(0,255,255,0.06);opacity:0;transform:translateY(10px);
+      transition:opacity 0.25s,transform 0.25s;z-index:99999;display:flex;gap:8px;align-items:center;}
+    .toast.show{opacity:1;transform:none;}
+    @media(max-width:720px){thead th{font-size:12px;}tbody td{font-size:13px;}.controls{flex-direction:column;align-items:flex-end;gap:6px;}}
+  </style>
+</head>
+<body>
+  <h1><i class="fa-solid fa-clock-rotate-left"></i> Historial de Recargas</h1>
+
+  <div class="topbar card">
+    <div><strong>Total:</strong> <span id="totalRecargas">0</span></div>
+    <div class="controls">
+      <input id="searchInput" type="search" placeholder="Buscar por usuario..." />
+      <button id="refreshBtn" class="btn">Refrescar</button>
+    </div>
+  </div>
+
+  <div class="table-wrap card">
+    <table>
+      <thead>
+        <tr>
+          <th>Usuario</th>
+          <th>Fecha</th>
+          <th>Tipo</th>
+          <th>Cantidad</th>
+          <th>Copiar</th>
+        </tr>
+      </thead>
+      <tbody id="recargasTbody"></tbody>
+    </table>
+  </div>
+
+  <script>
+    // === Toast ===
+    function showToast(msg,type="info"){
+      const colors={info:'var(--neon)',success:'#00ff7f',error:'#ff6b6b'};
+      const old=document.querySelector('.toast');if(old)old.remove();
+      const t=document.createElement('div');t.className='toast';
+      const icon=document.createElement('i');icon.className='fa-solid fa-circle-info';icon.style.color=colors[type];
+      const span=document.createElement('span');span.textContent=msg;
+      t.append(icon,span);document.body.appendChild(t);
+      setTimeout(()=>t.classList.add('show'),50);
+      setTimeout(()=>{t.classList.remove('show');setTimeout(()=>t.remove(),300);},3500);
+    }
+
+    const tbody=document.getElementById('recargasTbody');
+    const totalRecargasEl=document.getElementById('totalRecargas');
+    const searchInput=document.getElementById('searchInput');
+    const refreshBtn=document.getElementById('refreshBtn');
+    let allRecargas=[];
+
+    if(typeof database==='undefined'){
+      showToast('⚠️ Firebase no inicializado.','error');
+    }else{
+      loadRecargas();
+    }
+
+    function loadRecargas(){
+      database.ref('users').once('value').then(snap=>{
+        const users=snap.val()||{};
+        let recs=[];
+        Object.keys(users).forEach(u=>{
+          const recargas=users[u].recargas||{};
+          Object.keys(recargas).forEach(k=>{
+            const r=recargas[k];
+            recs.push({
+              usuario:u,
+              fecha:r.fecha||'-',
+              tipo:r.tipo||'-',
+              cantidad:r.cantidad||0,
+              timestamp:r.timestamp||0
+            });
+          });
+        });
+        allRecargas=recs.sort((a,b)=>b.timestamp - a.timestamp);
+        renderRecargas();
+      }).catch(()=>{
+        showToast('Error al cargar historial','error');
+      });
+    }
+
+    function renderRecargas(){
+      const q=(searchInput.value||'').toLowerCase();
+      const filtered=allRecargas.filter(r=>!q||r.usuario.toLowerCase().includes(q));
+      tbody.innerHTML='';
+      filtered.forEach(r=>{
+        const tr=document.createElement('tr');
+        tr.innerHTML=`
+          <td><strong>${r.usuario}</strong></td>
+          <td>${r.fecha}</td>
+          <td>${r.tipo}</td>
+          <td>${r.cantidad}</td>
+          <td><i class="fa-solid fa-copy copy-icon" title="Copiar información"></i></td>
+        `;
+        const icon=tr.querySelector('.copy-icon');
+        icon.onclick=()=>{
+          const text=`Ya se realizó tu recarga ✅\n\nUsuario: ${r.usuario}\nFecha: ${r.fecha}\nCantidad: ${r.cantidad}\nTipo: ${r.tipo}`;
+          navigator.clipboard.writeText(text).then(()=>{
+            showToast('Copiado al portapapeles ✅','success');
+          }).catch(()=>{
+            showToast('Error al copiar','error');
+          });
+        };
+        tbody.appendChild(tr);
+      });
+      totalRecargasEl.textContent=filtered.length;
+    }
+
+    searchInput.oninput=()=>renderRecargas();
+    refreshBtn.onclick=()=>{
+      loadRecargas();
+      showToast('Refrescado','info');
+    };
+  </script>
+</body>
+</html>

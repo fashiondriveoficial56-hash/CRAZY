@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Crear Cuenta - CrazyMods</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/styleregister.css">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+  <!-- ===== Estilo Toast ===== -->
+  <style>
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #1e1e2f;
+      color: #fff;
+      padding: 12px 18px;
+      border-radius: 10px;
+      font-size: 14px;
+      min-width: 220px;
+      box-shadow: 0 0 15px rgba(0, 255, 255, 0.7);
+      border: 1px solid rgba(0, 255, 255, 0.8);
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .toast.success { box-shadow: 0 0 15px rgba(0, 255, 127, 0.8); border-color: #00ff7f; }
+    .toast.error { box-shadow: 0 0 15px rgba(255, 50, 50, 0.8); border-color: #ff3232; }
+    .toast.info { box-shadow: 0 0 15px rgba(0, 150, 255, 0.8); border-color: #0096ff; }
+    .toast i { font-size: 16px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="form-box">
+      <!-- LOGO -->
+      <div class="logo">
+        <div class="logo-icon"><i class="fa-solid fa-user-plus"></i></div>
+        <h1 class="gradient-text">CrazyMods</h1>
+      </div>
+
+      <h2>Crear Cuenta</h2>
+      <p class="subtitle">Completa el formulario para comenzar</p>
+
+      <form id="registerForm" autocomplete="off" onsubmit="return false;">
+        <!-- NOMBRE DE USUARIO -->
+        <label for="username">NOMBRE DE USUARIO</label>
+        <div class="input-group">
+          <i class="fa-solid fa-at"></i>
+          <input id="username" type="text" placeholder="Usuario único (mínimo 3 caracteres)" required />
+        </div>
+
+        <!-- CORREO -->
+        <label for="email">CORREO ELECTRÓNICO</label>
+        <div class="input-group">
+          <i class="fa-solid fa-envelope"></i>
+          <input id="email" type="email" placeholder="tu@email.com" required />
+        </div>
+
+        <!-- WHATSAPP -->
+        <label for="country">WHATSAPP (OBLIGATORIO)</label>
+        <select id="country" required>
+          <option value="" disabled selected>Selecciona tu país...</option>
+          <option value="cu" data-code="+53">🇨🇺 Cuba (+53)</option>
+          <option value="mx" data-code="+52">🇲🇽 México (+52)</option>
+          <option value="es" data-code="+34">🇪🇸 España (+34)</option>
+          <option value="us" data-code="+1">🇺🇸 Estados Unidos (+1)</option>
+          <option value="ar" data-code="+54">🇦🇷 Argentina (+54)</option>
+          <option value="co" data-code="+57">🇨🇴 Colombia (+57)</option>
+        </select>
+
+        <div class="phone-row">
+          <div id="country-code" class="country-code">+</div>
+          <div class="phone-input">
+            <i class="fa-brands fa-whatsapp" aria-hidden="true"></i>
+            <input id="whatsapp" type="tel" placeholder="Número de teléfono" required />
+          </div>
+        </div>
+
+        <small>Selecciona tu país y escribe solo el número sin el código</small>
+
+        <!-- CONTRASEÑA -->
+        <label for="password">CONTRASEÑA</label>
+        <div class="input-group">
+          <i class="fa-solid fa-lock"></i>
+          <input id="password" type="password" placeholder="Mínimo 6 caracteres" required />
+          <i class="fa-solid fa-eye toggle-password" data-target="password"></i>
+        </div>
+
+        <!-- CONFIRMAR -->
+        <label for="confirm">CONFIRMAR CONTRASEÑA</label>
+        <div class="input-group">
+          <i class="fa-solid fa-lock"></i>
+          <input id="confirm" type="password" placeholder="Repite tu contraseña" required />
+          <i class="fa-solid fa-eye toggle-password" data-target="confirm"></i>
+        </div>
+
+        <!-- TÉRMINOS -->
+        <div class="terms">
+          <input id="terms" type="checkbox" required />
+          <label for="terms">Acepto los <a href="#">Términos y Condiciones</a> y la <a href="#">Política de Privacidad</a></label>
+        </div>
+
+        <!-- BOTÓN CREAR CUENTA -->
+        <button type="submit" class="btn-primary">
+          <i class="fa-solid fa-rocket"></i>
+          CREAR CUENTA
+        </button>
+
+        <!-- LINK LOGIN -->
+        <p class="login-link">¿Ya tienes cuenta? <a href="index.html">Inicia sesión aquí</a></p>
+
+        <!-- SEPARADOR -->
+        <div class="divider">
+          <span class="line"></span>
+          <p class="divider-text">O regístrate con</p>
+          <span class="line"></span>
+        </div>
+
+        <!-- BOTONES SOCIALES -->
+        <div class="social-login">
+          <button type="button" class="btn-social telegram"><i class="fa-brands fa-telegram"></i> Telegram</button>
+          <button type="button" class="btn-social whatsapp"><i class="fa-brands fa-whatsapp"></i> WhatsApp</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/firebase-config.js"></script>
+
+  <script>
+    // ==== TOAST ====
+    function showToast(message, type = "info") {
+      const oldToast = document.querySelector(".toast");
+      if (oldToast) oldToast.remove();
+      const toast = document.createElement("div");
+      toast.className = `toast ${type}`;
+      let icon = "";
+      if (type === "success") icon = '<i class="fa-solid fa-check-circle" style="color:#00ff7f"></i>';
+      else if (type === "error") icon = '<i class="fa-solid fa-triangle-exclamation" style="color:#ff4c4c"></i>';
+      else if (type === "info") icon = '<i class="fa-solid fa-circle-info" style="color:#00bfff"></i>';
+      toast.innerHTML = `${icon}<span>${message}</span>`;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.classList.add("show"), 100);
+      setTimeout(() => { toast.classList.remove("show"); setTimeout(() => toast.remove(), 400); }, 3000);
+    }
+
+    // ==== Registro SIN Firebase Auth ====
+    const registerForm = document.getElementById("registerForm");
+    registerForm.addEventListener("submit", async function(e) {
+      e.preventDefault();
+
+      const username = document.getElementById("username").value.trim();
+      const email = document.getElementById("email").value.trim().toLowerCase();
+      const password = document.getElementById("password").value.trim();
+      const confirm = document.getElementById("confirm").value.trim();
+      const country = document.getElementById("country");
+      const whatsapp = document.getElementById("whatsapp").value.trim();
+      const code = country.selectedOptions[0]?.dataset.code || "";
+      const fullNumber = `${code} ${whatsapp}`;
+
+      if (username.length < 3) return showToast("⚠️ El usuario debe tener al menos 3 caracteres.", "error");
+      if (!email.includes("@")) return showToast("⚠️ Ingresa un correo válido.", "error");
+      if (password.length < 6) return showToast("⚠️ La contraseña debe tener al menos 6 caracteres.", "error");
+      if (password !== confirm) return showToast("⚠️ Las contraseñas no coinciden.", "error");
+      if (!country.value || !whatsapp) return showToast("⚠️ Ingresa tu número de WhatsApp completo.", "error");
+
+      try {
+        // ✅ Verificar si el correo ya existe
+        const usersSnapshot = await database.ref("users").once("value");
+        let emailExists = false;
+
+        usersSnapshot.forEach(user => {
+          const data = user.val();
+          if (data.email && data.email.toLowerCase() === email) {
+            emailExists = true;
+          }
+        });
+
+        if (emailExists) {
+          return showToast("❌ Este correo ya está registrado.", "error");
+        }
+
+        // ✅ Verificar si el nombre de usuario ya existe
+        const userRef = database.ref("users/" + username);
+        const snapshot = await userRef.get();
+
+        if (snapshot.exists()) {
+          return showToast("❌ El usuario ya existe.", "error");
+        }
+
+        // Crear nuevo usuario
+        const uid = "uid_" + Math.random().toString(36).substring(2, 12);
+        const newUserData = {
+          uid: uid,
+          nombre: username,
+          email: email,
+          password: password,
+          whatsapp: fullNumber,
+          saldo: 0,
+          bono: 0
+        };
+
+        await userRef.set(newUserData);
+        showToast("✅ Cuenta creada con éxito.", "success");
+        setTimeout(() => window.location.href = "index.html", 1500);
+      } catch (error) {
+        console.error(error);
+        showToast("❌ Error al registrar el usuario.", "error");
+      }
+    });
+
+    (function () {
+      const countrySelect = document.getElementById('country');
+      const codeEl = document.getElementById('country-code');
+      const whatsappInput = document.getElementById('whatsapp');
+
+      function updateCode() {
+        const opt = countrySelect.selectedOptions[0];
+        const code = opt ? (opt.dataset.code || '+') : '+';
+        codeEl.textContent = code;
+        whatsappInput.placeholder = `${code} Número de teléfono`;
+        codeEl.classList.add('pulse');
+        setTimeout(() => codeEl.classList.remove('pulse'), 350);
+      }
+
+      if (countrySelect && codeEl) {
+        updateCode();
+        countrySelect.addEventListener('change', updateCode);
+      }
+
+      document.querySelectorAll('.toggle-password').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const targetId = btn.getAttribute('data-target');
+          const input = document.getElementById(targetId);
+          if (!input) return;
+          input.type = input.type === 'password' ? 'text' : 'password';
+          btn.classList.toggle('open');
+        });
+      });
+    })();
+  </script>
+
+  <!-- === DIALOGO DE PAÍSES (Pop-up Neon) === -->
+  <style>
+    .dialog-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 10, 25, 0.75);
+      backdrop-filter: blur(6px);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      animation: fadeIn 0.3s ease forwards;
+    }
+
+    .dialog-box {
+      background: #0f0f1a;
+      border: 1px solid #00ffff;
+      box-shadow: 0 0 25px rgba(0, 255, 255, 0.5);
+      border-radius: 16px;
+      padding: 20px;
+      width: 320px;
+      color: #fff;
+      font-family: 'Poppins', sans-serif;
+      animation: zoomIn 0.3s ease forwards;
+    }
+
+    .dialog-box h3 {
+      text-align: center;
+      margin-bottom: 15px;
+      color: #00ffff;
+      text-shadow: 0 0 8px #00ffff;
+    }
+
+    .dialog-country {
+      background: #1b1b2f;
+      border: 1px solid transparent;
+      padding: 10px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .dialog-country:hover {
+      border-color: #00ffff;
+      box-shadow: 0 0 12px rgba(0,255,255,0.5);
+      transform: scale(1.03);
+    }
+
+    .dialog-close {
+      display: block;
+      margin: 10px auto 0;
+      background: none;
+      border: 1px solid #00ffff;
+      color: #00ffff;
+      padding: 6px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.2s ease;
+    }
+
+    .dialog-close:hover {
+      background: #00ffff;
+      color: #0f0f1a;
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0;}
+      to {opacity: 1;}
+    }
+
+    @keyframes zoomIn {
+      from {opacity: 0; transform: scale(0.8);}
+      to {opacity: 1; transform: scale(1);}
+    }
+  </style>
+
+  <div class="dialog-overlay" id="countryDialog">
+    <div class="dialog-box">
+      <h3>Selecciona tu país 🌎</h3>
+      <div class="dialog-country" data-value="cu" data-code="+53">🇨🇺 Cuba (+53)</div>
+      <div class="dialog-country" data-value="mx" data-code="+52">🇲🇽 México (+52)</div>
+      <div class="dialog-country" data-value="es" data-code="+34">🇪🇸 España (+34)</div>
+      <div class="dialog-country" data-value="us" data-code="+1">🇺🇸 Estados Unidos (+1)</div>
+      <div class="dialog-country" data-value="ar" data-code="+54">🇦🇷 Argentina (+54)</div>
+      <div class="dialog-country" data-value="co" data-code="+57">🇨🇴 Colombia (+57)</div>
+      <button class="dialog-close" id="closeDialog">Cerrar</button>
+    </div>
+  </div>
+
+  <script>
+    const dialog = document.getElementById("countryDialog");
+    const select = document.getElementById("country");
+    const closeDialog = document.getElementById("closeDialog");
+
+    select.addEventListener("mousedown", (e) => {
+      e.preventDefault();
+      dialog.style.display = "flex";
+    });
+
+    closeDialog.addEventListener("click", () => {
+      dialog.style.display = "none";
+    });
+
+    document.querySelectorAll(".dialog-country").forEach(item => {
+      item.addEventListener("click", () => {
+        const value = item.dataset.value;
+        const code = item.dataset.code;
+        select.value = value;
+        select.querySelectorAll("option").forEach(opt => {
+          opt.selected = opt.value === value;
+        });
+        const codeEl = document.getElementById("country-code");
+        if (codeEl) codeEl.textContent = code;
+        dialog.style.display = "none";
+      });
+    });
+
+    dialog.addEventListener("click", (e) => {
+      if (e.target === dialog) dialog.style.display = "none";
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>CrazyMods | Admin Dashboard</title>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+  />
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+    }
+
+    html, body {
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+      background: radial-gradient(circle at top left, #060912, #0a0d1c 70%);
+      color: #fff;
+    }
+
+    header {
+      width: 100vw;
+      height: 65px;
+      background: linear-gradient(90deg, rgba(10, 25, 55, 0.95), rgba(15, 60, 120, 0.85));
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(0, 255, 255, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 10px;
+      box-shadow: 0 4px 20px rgba(0, 255, 255, 0.1);
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 100;
+    }
+
+    .header-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      gap: 10px;
+    }
+
+    .menu-btn-box {
+      width: 45px;
+      height: 45px;
+      border: 2px solid rgba(0, 255, 255, 0.4);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      flex-shrink: 0;
+    }
+
+    .menu-btn-box:hover {
+      background: rgba(0, 255, 255, 0.15);
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.4);
+    }
+
+    .menu-icon {
+      font-size: 1.3rem;
+      color: #00ffff;
+    }
+
+    .title {
+      flex-grow: 1;
+      font-size: 1.3rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      margin-left: 10px;
+      background: linear-gradient(90deg, #00ffff, #00bcd4);
+      -webkit-background-clip: text;
+      color: transparent;
+      user-select: none;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .search-box {
+      position: relative;
+      display: flex;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 20px;
+      padding: 5px 10px;
+      transition: all 0.3s ease;
+      width: 160px;
+      flex-shrink: 1;
+    }
+
+    .search-box:hover {
+      background: rgba(255, 255, 255, 0.12);
+      width: 200px;
+    }
+
+    .search-box i {
+      color: #00ffff;
+      font-size: 0.9rem;
+      margin-right: 8px;
+      flex-shrink: 0;
+    }
+
+    .search-box input {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #fff;
+      font-size: 0.9rem;
+      width: 100%;
+      min-width: 50px;
+    }
+
+    .profile-btn {
+      background: rgba(0, 255, 255, 0.15);
+      border: 1px solid rgba(0, 255, 255, 0.25);
+      color: #00ffff;
+      border-radius: 50%;
+      width: 38px;
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      flex-shrink: 0;
+    }
+
+    .profile-btn:hover {
+      background: rgba(0, 255, 255, 0.25);
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.4);
+    }
+
+    .drawer {
+      position: fixed;
+      top: 65px;
+      left: 0;
+      width: 250px;
+      height: calc(100vh - 65px);
+      background: linear-gradient(160deg, rgba(5, 15, 35, 0.95), rgba(10, 30, 60, 0.85));
+      backdrop-filter: blur(15px);
+      border-right: 1px solid rgba(0, 255, 255, 0.1);
+      box-shadow: 4px 0 20px rgba(0, 255, 255, 0.1);
+      transform: translateX(-100%);
+      transition: transform 0.4s ease;
+      z-index: 90;
+      display: flex;
+      flex-direction: column;
+      padding-top: 15px;
+      overflow-y: auto;
+    }
+
+    .drawer.open { transform: translateX(0); }
+
+    .drawer h3 {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: rgba(0, 255, 255, 0.6);
+      padding: 8px 24px;
+      margin-top: 10px;
+    }
+
+    .drawer a {
+      padding: 14px 28px;
+      color: #bffcff;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      transition: all 0.3s ease;
+      font-size: 1rem;
+      border-radius: 0 25px 25px 0;
+      margin: 3px 0;
+      position: relative;
+    }
+
+    .drawer a:hover {
+      background: linear-gradient(90deg, rgba(0, 255, 255, 0.1), rgba(0, 255, 255, 0.2));
+      padding-left: 38px;
+      color: #00ffff;
+      box-shadow: 0 0 12px rgba(0, 255, 255, 0.15);
+    }
+
+    .drawer a.active {
+      background: linear-gradient(90deg, rgba(0, 255, 255, 0.3), rgba(0, 255, 255, 0.1));
+      color: #00ffff;
+      box-shadow: inset 4px 0 0 #00ffff;
+      font-weight: 600;
+    }
+
+    .drawer a i {
+      color: #00ffff;
+      font-size: 1.1rem;
+      width: 22px;
+      text-align: center;
+      text-shadow: 0 0 6px rgba(0, 255, 255, 0.4);
+    }
+
+    main {
+      margin-top: 65px;
+      width: 100%;
+      height: calc(100vh - 65px);
+      overflow: hidden;
+    }
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    .fade-in {
+      animation: fadeIn 0.4s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="header-container">
+      <div class="menu-btn-box" id="menuBtn">
+        <i class="fa-solid fa-bars menu-icon"></i>
+      </div>
+      <h1 class="title" id="pageTitle">CrazyMods Admin</h1>
+      <div class="header-right">
+        <div class="search-box">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" placeholder="Buscar..." />
+        </div>
+        <div class="profile-btn"><i class="fa-solid fa-user-shield"></i></div>
+      </div>
+    </div>
+  </header>
+
+  <nav class="drawer" id="drawer">
+    <h3>General</h3>
+    <a href="#" data-page="inicio.html" class="active"><i class="fa-solid fa-house"></i>Inicio</a>
+    <a href="#" data-page="admin.html"><i class="fa-solid fa-bell"></i>Enviar Notificaciones</a>
+
+    <h3>Administración</h3>
+    <a href="#" data-page="adminacount.html"><i class="fa-solid fa-users-cog"></i>Administrar Cuenta</a>
+    <a href="#" data-page="historial.html"><i class="fa-solid fa-clock-rotate-left"></i>Historial</a>
+
+    <h3>Actualizaciones</h3>
+    <a href="#" data-page="enviar-update.html"><i class="fa-solid fa-upload"></i>Enviar Actualización</a>
+    <a href="#" data-page="enviar-datas.html"><i class="fa-solid fa-database"></i>Enviar Datas</a>
+
+    <!-- 🔥 NUEVO BOTÓN DE HISTORIAL DE DATAS -->
+    <a href="#" data-page="historial-datas.html"><i class="fa-solid fa-folder-open"></i>Historial de Datas</a>
+
+    <a href="#" data-page="registro-updates.html"><i class="fa-solid fa-list-check"></i>Registro de Updates</a>
+
+    <h3>Mantenimiento</h3>
+    <a href="#" data-page="enviar-mantenimiento.html"><i class="fa-solid fa-screwdriver-wrench"></i>Enviar Mantenimiento</a>
+    <a href="#" data-page="reportes.html"><i class="fa-solid fa-file-lines"></i>Ver Reportes</a>
+
+    <h3>Sistema</h3>
+    <a href="#" data-page="ajustes.html"><i class="fa-solid fa-gear"></i>Ajustes</a>
+    <a href="#" data-page="seguridad.html"><i class="fa-solid fa-shield-halved"></i>Seguridad</a>
+    <a href="#" data-page="soporte.html"><i class="fa-solid fa-headset"></i>Soporte Técnico</a>
+    <a href="#" data-page="feedback.html"><i class="fa-solid fa-comments"></i>Feedback</a>
+  </nav>
+
+  <main>
+    <iframe id="viewFrame" src="inicio.html" class="fade-in"></iframe>
+  </main>
+
+  <script>
+    const drawer = document.getElementById("drawer");
+    const menuBtn = document.getElementById("menuBtn");
+    const frame = document.getElementById("viewFrame");
+    const links = document.querySelectorAll(".drawer a");
+    const title = document.getElementById("pageTitle");
+
+    menuBtn.addEventListener("click", () => {
+      drawer.classList.toggle("open");
+    });
+
+    links.forEach(link => {
+      link.addEventListener("click", e => {
+        e.preventDefault();
+        const page = link.dataset.page;
+        loadPage(page);
+      });
+    });
+
+    function loadPage(page) {
+      frame.classList.remove("fade-in");
+      void frame.offsetWidth;
+      frame.src = page;
+      frame.classList.add("fade-in");
+      updateActiveButton(page);
+      drawer.classList.remove("open");
+    }
+
+    function updateActiveButton(page) {
+      links.forEach(l => l.classList.remove("active"));
+      const activeLink = Array.from(links).find(l => l.dataset.page === page);
+      if (activeLink) {
+        activeLink.classList.add("active");
+        title.textContent = "CrazyMods | " + activeLink.textContent.trim();
+      }
+    }
+
+    frame.addEventListener("load", () => {
+      const currentPage = frame.src.split("/").pop();
+      updateActiveButton(currentPage);
+    });
+
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) {
+        const currentPage = frame.src.split("/").pop();
+        updateActiveButton(currentPage);
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,1198 @@
+/* ===== GENERAL ===== */
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background: radial-gradient(circle at center, #0b1022 0%, #050714 100%);
+  color: white;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.container {
+  display: flex;
+  height: 100%;
+}
+
+/* ===== SIDEBAR ===== */
+.sidebar {
+  width: 240px;
+  background: #0b1022;
+  border-right: 2px solid #00fff7;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  box-shadow: 0 0 15px rgba(0, 255, 247, 0.2);
+}
+
+.sidebar-header {
+  padding: 20px 15px;
+  border-bottom: 2px solid rgba(0, 255, 247, 0.3);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.logo i {
+  font-size: 1.6rem;
+  color: #00fff7;
+  margin-right: 8px;
+}
+
+.gradient-text {
+  background: linear-gradient(90deg, #00fff7, #ff00c8);
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.menu-title {
+  font-size: 0.7rem;
+  color: #8f9bb3;
+  letter-spacing: 1px;
+  margin-top: 10px;
+}
+
+.menu {
+  padding: 10px 15px;
+}
+
+.menu ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.menu li {
+  padding: 10px 12px;
+  color: #ffffff;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.menu li i {
+  margin-right: 10px;
+  color: #ffffff;
+  font-size: 1rem;
+  transition: color 0.3s ease;
+}
+
+/* 🔥 Hover */
+.menu li:hover {
+  background: linear-gradient(90deg, rgba(0, 255, 247, 0.15), rgba(0, 255, 247, 0.03));
+  box-shadow: inset 3px 0 0 #00fff7, 0 0 12px rgba(0, 255, 247, 0.4);
+  color: #00fff7;
+}
+
+.menu li:hover i {
+  color: #00fff7;
+}
+
+.menu.acceso {
+  border-top: 2px solid rgba(0, 255, 247, 0.3);
+  margin-top: auto;
+}
+
+/* ===== HEADER ===== */
+.header {
+  background: linear-gradient(90deg, #0b1022, #0f1b34);
+  border-bottom: 2px solid rgba(0, 255, 247, 0.3);
+  height: 90px; /* 🔹 más alto para que se vea mejor */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  box-shadow: 0 0 15px rgba(0, 255, 247, 0.2);
+}
+
+.header-title {
+  font-size: 2.3rem; /* 🔹 texto más grande */
+  color: #00fff7;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.header-title img,
+.header-title i {
+  width: 60px; /* 🔹 imagen/logo más grande */
+  height: auto;
+  font-size: 2.5rem; /* 🔹 si es ícono */
+  filter: drop-shadow(0 0 8px #00fff7);
+}
+
+/* ===== MAIN CONTENT ===== */
+.main-content {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: calc(100vh - 80px);
+  flex-direction: column;
+  text-align: center;
+}
+
+.store-logo i {
+  color: #00fff7;
+  font-size: 3rem;
+  margin-bottom: 10px;
+}
+
+.neon-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #ff00c8;
+  text-shadow: 0 0 10px #ff00c8, 0 0 20px #ff00c8;
+}
+
+.neon-title span {
+  color: #00fff7;
+  text-shadow: 0 0 10px #00fff7, 0 0 20px #00fff7;
+}
+
+.subtitle {
+  margin-top: 8px;
+  color: #ccc;
+  font-size: 0.9rem;
+}
+
+.buttons {
+  margin-top: 25px;
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+}
+
+.btn {
+  padding: 12px 25px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-blue {
+  background: linear-gradient(90deg, #007bff, #00bfff);
+  color: white;
+}
+
+.btn-pink {
+  background: linear-gradient(90deg, #ff007a, #ff4bcf);
+  color: white;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 15px rgba(0, 255, 247, 0.5);
+}
+
+.discover {
+  margin-top: 20px;
+  font-size: 0.8rem;
+  color: #999;
+  letter-spacing: 2px;
+}
+
+
+/* ======== HEADER USER BOX (ESTILO CUBANHACKS) ======== */
+.header-container {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 40px;
+}
+
+.logo-area .neon-logo {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #00fff7;
+  text-shadow: 0 0 10px #00fff7, 0 0 20px #00fff7;
+}
+
+.logo-area .neon-logo span {
+  color: #ff00c8;
+  text-shadow: 0 0 10px #ff00c8, 0 0 20px #ff00c8;
+}
+
+.user-info-box {
+  display: flex;
+  align-items: center;
+  background: linear-gradient(90deg, #081122, #122542);
+  border-radius: 50px;
+  padding: 10px 25px;
+  gap: 20px;
+  box-shadow: 0 0 20px rgba(0, 255, 247, 0.4);
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #fff;
+  font-size: 0.8rem;
+}
+
+.info-item.date i {
+  color: #00fff7;
+  font-size: 1.2rem;
+  margin-bottom: 3px;
+}
+
+.info-item.user {
+  flex-direction: row;
+  gap: 8px;
+  font-weight: 600;
+}
+
+.user-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid #00fff7;
+  box-shadow: 0 0 10px #00fff7;
+}
+
+.info-item.saldo .value {
+  color: #00ffae;
+  font-weight: 700;
+}
+
+.info-item.bono .value {
+  color: #ffb700;
+  font-weight: 700;
+}
+
+.info-item small {
+  font-size: 0.6rem;
+  color: #aaa;
+}
+
+
+/* ===== HEADER LOGGED STYLE ===== */
+.header-logged {
+  background: linear-gradient(90deg, #0b1022, #101a34);
+  border-bottom: 2px solid rgba(0, 255, 247, 0.3);
+  height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  box-shadow: 0 0 15px rgba(0, 255, 247, 0.2);
+}
+
+.header-logged .header-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 85%;
+}
+
+.fecha-hora {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #00fff7;
+  font-weight: 600;
+}
+
+.fecha-hora i {
+  font-size: 1.3rem;
+}
+
+.usuario-datos {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: linear-gradient(90deg, rgba(0, 255, 247, 0.15), rgba(255, 0, 200, 0.1));
+  padding: 8px 14px;
+  border-radius: 20px;
+  box-shadow: 0 0 10px rgba(0, 255, 247, 0.3);
+}
+
+.user-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 2px solid #00fff7;
+  box-shadow: 0 0 10px #00fff7;
+}
+
+.usuario-texto {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.usuario-texto span {
+  font-weight: 700;
+  color: #fff;
+}
+
+.usuario-texto small {
+  color: #ccc;
+  font-size: 0.75rem;
+}
+
+.user-money {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  font-weight: 700;
+}
+
+.user-money .saldo {
+  color: #00fff7;
+}
+
+.user-money .bono {
+  color: #ff00c8;
+}
+
+/* === HEADER LOGGED === */
+.header-logged {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: transparent;
+  padding: 20px 40px;
+  position: relative;
+}
+
+.header-logged h1.gradient-text {
+  font-size: 2rem;
+  background: linear-gradient(90deg, #00eaff, #ff00ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 700;
+}
+
+/* Caja donde están los datos compactos */
+.header-panel {
+  display: flex;
+  align-items: center;
+  background: rgba(15, 20, 40, 0.85);
+  border: 1px solid rgba(0, 255, 255, 0.3);
+  border-radius: 30px;
+  padding: 10px 20px;
+  gap: 10px;
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
+}
+
+.panel-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 25px;
+  padding: 6px 12px;
+}
+
+.panel-item i {
+  color: cyan;
+  font-size: 14px;
+}
+
+.panel-item .avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+}
+
+.panel-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.1;
+}
+
+.panel-text p {
+  font-size: 13px;
+  color: #fff;
+  margin: 0;
+  font-weight: 600;
+}
+
+.panel-text small {
+  font-size: 10px;
+  color: #00ffffa0;
+}
+
+/* Campana de notificaciones circular */
+.notif .bell-circle {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  background: rgba(0, 255, 255, 0.1);
+  border: 1px solid cyan;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.notif .fa-bell {
+  color: cyan;
+  font-size: 14px;
+}
+
+.notif-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: #ff006e;
+  color: #fff;
+  font-size: 10px;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Responsive para móvil */
+@media (max-width: 768px) {
+  .header-logged {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+  .header-panel {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
+
+
+
+/* === Iconos del saldo, bonus y usuario mejorados === */
+
+.panel-item i {
+  color: cyan;
+  font-size: 15px;
+}
+
+/* Avatar circular con borde */
+.avatar-circle {
+  width: 32px;
+  height: 32px;
+  border: 1px solid cyan;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 255, 255, 0.1);
+}
+
+.avatar-circle .avatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+}
+
+/* Ajuste de spacing para que quede igual que la imagen */
+.panel-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 25px;
+  padding: 5px 10px;
+}
+
+.panel-text p {
+  font-size: 13px;
+  margin: 0;
+  color: #fff;
+  font-weight: 600;
+}
+
+.panel-text small {
+  font-size: 10px;
+  color: #00ffffa0;
+  text-transform: uppercase;
+}
+
+
+/* === HEADER LOGGED === */
+.header-logged {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: transparent;
+  padding: 20px 40px;
+  position: relative;
+}
+
+.header-logged h1.gradient-text {
+  font-size: 2rem;
+  background: linear-gradient(90deg, #00eaff, #ff00ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 700;
+}
+
+/* Caja donde están los datos compactos */
+.header-panel {
+  display: flex;
+  align-items: center;
+  background: rgba(15, 20, 40, 0.85);
+  border: 1px solid rgba(0, 255, 255, 0.3);
+  border-radius: 30px;
+  padding: 10px 20px;
+  gap: 10px;
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
+}
+
+.panel-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 25px;
+  padding: 6px 12px;
+}
+
+.panel-item i {
+  color: cyan;
+  font-size: 14px;
+}
+
+.panel-item .avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+}
+
+.panel-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.1;
+}
+
+.panel-text p {
+  font-size: 13px;
+  color: #fff;
+  margin: 0;
+  font-weight: 600;
+}
+
+.panel-text small {
+  font-size: 10px;
+  color: #00ffffa0;
+}
+
+/* Campana de notificaciones circular */
+.notif .bell-circle {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  background: rgba(0, 255, 255, 0.1);
+  border: 1px solid cyan;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.notif .fa-bell {
+  color: cyan;
+  font-size: 14px;
+}
+
+.notif-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: #ff006e;
+  color: #fff;
+  font-size: 10px;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Responsive para móvil */
+@media (max-width: 768px) {
+  .header-logged {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+  .header-panel {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
+
+/* === Iconos del saldo, bonus y usuario mejorados === */
+
+.panel-item i {
+  color: cyan;
+  font-size: 15px;
+}
+
+/* Avatar circular con borde */
+.avatar-circle {
+  width: 32px;
+  height: 32px;
+  border: 1px solid cyan;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 255, 255, 0.1);
+}
+
+.avatar-circle .avatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+}
+
+/* Ajuste de spacing para que quede igual que la imagen */
+.panel-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 25px;
+  padding: 5px 10px;
+}
+
+.panel-text p {
+  font-size: 13px;
+  margin: 0;
+  color: #fff;
+  font-weight: 600;
+}
+
+.panel-text small {
+  font-size: 10px;
+  color: #00ffffa0;
+  text-transform: uppercase;
+}
+
+
+
+
+
+/* 🌐 Responsive: Diseño móvil */
+@media (max-width: 768px) {
+  /* 🔹 Drawer (sidebar) ocupa toda la pantalla ABAJO del header */
+  .sidebar {
+    position: fixed;
+    top: 70px; /* debajo del header */
+    left: -100%;
+    height: calc(100vh - 70px);
+    width: 100%;
+    background: rgba(5, 10, 20, 0.98);
+    transition: left 0.35s ease;
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+    padding: 20px 22px; /* 🔧 igualamos padding lateral izquierdo/derecho */
+    overflow-y: auto;
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.25);
+    backdrop-filter: blur(6px);
+  }
+
+  .sidebar.open {
+    left: 0;
+  }
+
+  /* ✅ Cabecera del menú (drawer) */
+  .sidebar-header {
+    text-align: center;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(0, 255, 255, 0.15);
+  }
+
+  .sidebar-header .logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    color: #0ff;
+    font-size: 1.2rem;
+    text-transform: uppercase;
+  }
+
+  .sidebar-header .gradient-text {
+    background: linear-gradient(90deg, #00eaff, #ff00c8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 700;
+  }
+
+  /* 🔹 Títulos de secciones dentro del drawer */
+  .menu-title {
+    font-size: 0.75rem;
+    letter-spacing: 2px;
+    color: #aaa;
+    margin: 18px 0 8px;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .menu-title::before {
+    content: "⟡";
+    color: #00ffff;
+    font-size: 0.7rem;
+  }
+
+  .menu ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .menu ul li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 20px; /* 🔧 ajustado para mantener simetría con el contenedor */
+    margin-bottom: 12px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #fff;
+    background: linear-gradient(145deg, rgba(10, 10, 20, 0.85), rgba(0, 0, 0, 0.6));
+    box-shadow: 0 0 12px rgba(0, 255, 255, 0.08),
+                inset 0 0 6px rgba(255, 0, 200, 0.1);
+    transition: all 0.25s ease;
+  }
+
+  .menu ul li i {
+    color: #00ffff;
+    font-size: 1.1rem;
+    text-shadow: 0 0 8px rgba(0, 255, 255, 0.6);
+  }
+
+  .menu ul li:hover {
+    background: linear-gradient(145deg,
+      rgba(0, 255, 255, 0.1),
+      rgba(255, 0, 200, 0.1)
+    );
+    box-shadow: 0 0 18px rgba(0, 255, 255, 0.25);
+    transform: translateY(-2px);
+  }
+
+  .menu.acceso {
+    margin-top: 20px;
+  }
+
+  /* 🔹 Header móvil con gradiente azul/rosa */
+  .header,
+  .header-logged {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    z-index: 2100;
+    background: #0a0a1a;
+  }
+
+  .header .brand,
+  .header-logged .brand {
+    font-weight: 800;
+    font-size: 1.2rem;
+    background: linear-gradient(90deg, #00eaff, #ff00c8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* 🔹 Ícono del menú (drawer) centrado perfectamente */
+  .menu-toggle {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 48px;
+    height: 48px;
+    background: rgba(0, 255, 255, 0.1);
+    border: 1px solid rgba(0, 255, 255, 0.5);
+    border-radius: 12px;
+    color: #0ff;
+    font-size: 24px;
+    cursor: pointer;
+    box-shadow: 0 0 12px rgba(0, 255, 255, 0.3);
+    transition: background 0.3s ease, transform 0.2s ease;
+    z-index: 2101;
+  }
+
+  .menu-toggle i {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    font-size: 24px;
+  }
+
+  .menu-toggle:hover {
+    background: rgba(0, 255, 255, 0.2);
+    transform: scale(1.05);
+  }
+
+  .menu-toggle.active {
+    background: rgba(255, 0, 128, 0.2);
+    border-color: rgba(255, 0, 128, 0.5);
+    color: #f0f;
+  }
+
+  /* Scrollbar oculto */
+  .sidebar::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+  }
+
+  /* 📱 Botones (unete/iniciar) con mismo tamaño y alineación */
+  .buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    gap: 10px;
+  }
+
+  .buttons .btn {
+    width: 85%;
+    height: 42px;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    border-radius: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 0 6px rgba(0, 255, 255, 0.3);
+  }
+
+  .buttons .btn i {
+    font-size: 16px;
+  }
+
+  .buttons .btn:active {
+    transform: scale(0.97);
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+  }
+}
+
+/* 💻 En escritorio */
+@media (min-width: 769px) {
+  .menu-toggle {
+    display: none;
+  }
+
+  .sidebar {
+    display: block;
+    position: relative;
+    left: 0;
+    width: 220px;
+    height: auto;
+    background: transparent;
+    box-shadow: none;
+  }
+}
+
+
+
+
+
+
+/* 🔹 Notificación cuadrada igual al botón del menú */
+.bell-box {
+  position: relative;
+  margin-right: 10px;
+}
+
+.bell-box .fa-bell {
+  color: #0ff;
+  font-size: 20px;
+}
+
+.notif-badge {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  background: #ff00c8;
+  color: #fff;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 50%;
+}
+
+/* 🔹 En móvil los dos botones (campana + menú) siguen alineados */
+@media (max-width: 768px) {
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+}
+
+
+/* 🔔 Estilo del icono de notificación móvil */
+.notif-icon {
+  position: relative;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+.bell-circle {
+  background: rgba(0, 255, 255, 0.1);
+  border: 1px solid #0ff;
+  border-radius: 50%;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0ff;
+  transition: 0.3s;
+}
+
+.bell-circle:hover {
+  background: rgba(0, 255, 255, 0.2);
+}
+
+.notif-badge {
+  position: absolute;
+  top: -6px;
+  right: -4px;
+  background: #ff00c8;
+  color: white;
+  border-radius: 50%;
+  font-size: 10px;
+  padding: 2px 5px;
+}
+
+
+
+/* 🔔 Drawer flotante de notificaciones */
+.notification-box {
+  position: absolute;
+  top: 60px; /* debajo del header */
+  right: 15px;
+  width: 280px;
+  background: rgba(20, 20, 40, 0.95);
+  border: 1px solid rgba(0, 255, 255, 0.2);
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 255, 255, 0.2);
+  padding: 10px;
+  backdrop-filter: blur(6px);
+  display: none;
+  z-index: 3000;
+}
+
+/* 🔹 Mostrar cuando se active */
+.notification-box.show {
+  display: block;
+  animation: slideDown 0.25s ease forwards;
+}
+
+/* 💫 Animación al aparecer */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 🔸 Cada notificación */
+.notification-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.notification-item:last-child {
+  border-bottom: none;
+}
+
+.notification-item i {
+  color: #0ff;
+  font-size: 18px;
+  margin-top: 3px;
+}
+
+.notification-item p {
+  color: white;
+  font-size: 14px;
+  line-height: 1.3;
+  margin: 0;
+}
+
+.notification-item small {
+  display: block;
+  font-size: 11px;
+  color: #aaa;
+}
+
+/* ✅ Estilo del bloque de información del usuario en móvil */
+@media (max-width: 768px) {
+  .user-info-mobile {
+    display: flex !important;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 10px 14px;
+    margin: 10px 15px 18px;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
+  }
+
+  .user-info-mobile span {
+    display: flex;
+    align-items: center;
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+
+  .user-info-mobile .user-name {
+    color: #00eaff;
+  }
+
+  .user-info-mobile .saldo {
+    color: #00ff7f;
+  }
+
+  .user-info-mobile .bonus {
+    color: #ffcc00;
+  }
+
+  .user-info-mobile i {
+    margin-right: 6px;
+    font-size: 1rem;
+  }
+}
+
+/* BLOQUE DE INFORMACIÓN DEL USUARIO (solo se baja un poco) */
+.user-info-mobile {
+  margin-top: 90px; /* <-- Ajusta el valor (por ejemplo 15px o 20px) si quieres bajarlo más */
+}
+
+./* === Estilo bonito para el botón "Marcar como leída" === */
+.notif-mark {
+  display: inline-block;
+  background: linear-gradient(90deg, rgba(0,255,255,0.1), rgba(0,180,255,0.06));
+  color: var(--neon);
+  border: 1px solid rgba(0,255,255,0.25);
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  text-shadow: 0 0 5px rgba(0,255,255,0.4);
+}
+
+.notif-mark:hover {
+  background: linear-gradient(90deg, var(--neon), #66f0ff);
+  color: #001;
+  transform: translateY(-1px) scale(1.05);
+  box-shadow: 0 0 10px rgba(0,255,255,0.3);
+}
+
+
+
+
+/* 🔥 Corregir el header en móvil (hacer full width) */
+@media (max-width: 768px) {
+  header, .mobile-toolbar, .topbar {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+  }
+
+  body {
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow-x: hidden;
+  }
+
+  .main-container,
+  .content,
+  .dashboard-content {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+}
+
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  overflow-x: hidden; /* 🔒 bloquea el movimiento lateral */
+  background-color: #000; /* opcional si tu fondo es oscuro */
+}
+
+* {
+  box-sizing: border-box; /* evita desbordes por padding o border */
+}
+
+
+
+/* === SOLO BAJAR EL VIEWPAGER, SIN MOVER EL HEADER === */
+header,
+.header,
+.header-logged {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 2000;
+}
+
+/* === HEADER FIJO === */
+header,
+.header,
+.header-logged {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 2000;
+}
+
+/* === CONTENIDO DEBAJO DEL HEADER === */
+.main-content,
+.content,
+#viewpager {
+  margin-top: 85px; /* baja el contenido sin afectar el flujo del scroll */
+}
